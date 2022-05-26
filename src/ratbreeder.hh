@@ -19,8 +19,8 @@ protected:
 
 public:
   WhiskerImprover( const Evaluator<  WhiskerTree > & evaluator, const WhiskerTree & rat, const WhiskerImproverOptions & options,
-                   const double score_to_beat )
-    : ActionImprover< WhiskerTree, Whisker >( evaluator, rat, score_to_beat),
+                   const double score_to_beat, const bool sample = false )
+    : ActionImprover< WhiskerTree, Whisker >( evaluator, rat, score_to_beat, sample),
       _options( options ) {};
 };
 

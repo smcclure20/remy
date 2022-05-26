@@ -134,7 +134,7 @@ int main( int argc, char *argv[] )
 
     printf( "whiskers: %s\n", whiskers.str().c_str() );
 
-    for ( auto &run : outcome.throughputs_delays ) {
+    // for ( auto &run : outcome.throughputs_delays ) {
       if ( !(written) ) {
         for ( auto &run : outcome.throughputs_delays) {
           // record the config to the protobuf
@@ -144,11 +144,12 @@ int main( int argc, char *argv[] )
 
         }
       }
-      printf( "===\nconfig: %s\n", run.first.str().c_str() );
-      for ( auto &x : run.second ) {
-	printf( "sender: [tp=%f, del=%f]\n", x.first / run.first.link_ppt, x.second / run.first.delay );
-      }
-    }
+      // TODO: Find a less annoying way to print this out (if it is even helpful)
+      // printf( "===\nconfig: %s\n", run.first.str().c_str() );
+      // for ( auto &x : run.second ) {
+	      // printf( "sender: [tp=%f, del=%f]\n", x.first / run.first.link_ppt, x.second / run.first.delay );
+      // }
+    // }
 
     if ( !output_filename.empty() ) {
       char of[ 128 ];

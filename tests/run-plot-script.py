@@ -54,7 +54,7 @@ class TestPlotScript(unittest.TestCase):
 
         # clean up
         os.unlink("last")
-        shutil.rmtree(self.RESULTS_DIR)
+        shutil.rmtree(self.RESULTS_DIR, ignore_errors=True)
 
 if __name__ == '__main__':
     unittest.main()

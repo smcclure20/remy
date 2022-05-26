@@ -15,7 +15,7 @@ Evaluator< WhiskerTree >::Outcome RatBreeder::improve( WhiskerTree & whiskers )
   unsigned int generation = 0;
 
   while ( generation < 5 ) {
-    const Evaluator< WhiskerTree > eval( _options.config_range );
+    const Evaluator< WhiskerTree > eval( _options.config_range, 20 ); // TODO: Make this a parameter
 
     auto outcome( eval.score( whiskers ) );
 
@@ -30,7 +30,7 @@ Evaluator< WhiskerTree >::Outcome RatBreeder::improve( WhiskerTree & whiskers )
       continue;
     }
 
-    WhiskerImprover improver( eval, whiskers, _whisker_options, outcome.score );
+    WhiskerImprover improver( eval, whiskers, _whisker_options, outcome.score, true );
 
     Whisker whisker_to_improve = *most_used_whisker_ptr;
 

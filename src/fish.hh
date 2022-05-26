@@ -47,7 +47,7 @@ public:
   template <class NextHop>
   void send( const unsigned int id, NextHop & next, const double & tickno );
 
-  Fish & operator=( const Fish & ) { assert( false ); return *this; }
+  // Fish & operator=( const Fish & ) { assert( false ); return *this; }
 
   double next_event_time( const double & tickno ) const;
 

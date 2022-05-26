@@ -1,3 +1,4 @@
+syntax = "proto2";
 import "dna.proto";
 
 package AnswerBuffers;

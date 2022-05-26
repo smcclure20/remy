@@ -15,7 +15,7 @@ protected:
   MemoryRange _domain;
 
 public:
-  Action( const Action & other ) : _generation( other._generation ), _domain( other._domain ) {};
+  // Action( const Action & other ) : _generation( other._generation ), _domain( other._domain ) {};
   Action( const MemoryRange & s_domain ) : _generation( 0 ), _domain( s_domain ) {};
   virtual ~Action() {};
 

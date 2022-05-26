@@ -7,11 +7,11 @@
 
 using namespace std;
 
-Fin::Fin( const Fin & other )
-  : Action( other ),
-    _lambda( other._lambda )
-{
-}
+// Fin::Fin( const Fin & other )
+//   : Action( other ),
+//     _lambda( other._lambda )
+// {
+// }
 
 Fin::Fin( const RemyBuffers::Fin & dna )
   : Action ( dna.domain() ), 

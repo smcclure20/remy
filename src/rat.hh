@@ -40,7 +40,7 @@ public:
 
   const WhiskerTree & whiskers( void ) const { return _whiskers; }
 
-  Rat & operator=( const Rat & ) { assert( false ); return *this; }
+  // Rat & operator=( const Rat & ) { assert( false ); return *this; }
 
   double next_event_time( const double & tickno ) const;
 

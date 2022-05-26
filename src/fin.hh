@@ -12,7 +12,7 @@ class Fin : public Action {
 private:
   double _lambda;
 public:
-  Fin( const Fin & other );
+  // Fin( const Fin & other );
   Fin( const double s_rate, const MemoryRange & s_domain ) : Action( s_domain ), _lambda( s_rate) {};
   Fin( const MemoryRange & s_domain ) : Fin( get_optimizer().lambda.default_value, s_domain ) {};
   virtual ~Fin() {};

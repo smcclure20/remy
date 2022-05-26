@@ -1,4 +1,5 @@
 #include <fcntl.h>
+#include <algorithm>
 
 #include "configrange.hh"
 #include "evaluator.hh"
@@ -7,10 +8,11 @@
 #include "fish-templates.cc"
 
 template <typename T>
-Evaluator< T >::Evaluator( const ConfigRange & range )
+Evaluator< T >::Evaluator( const ConfigRange & range, const int sample )
   : _prng_seed( global_PRNG()() ), /* freeze the PRNG seed for the life of this Evaluator */
     _tick_count( range.simulation_ticks ),
-    _configs()
+    _configs(),
+    _sampled_configs()
 {
   // add configs from every point in the cube of configs
   for (double link_ppt = range.link_ppt.low; link_ppt <= range.link_ppt.high; link_ppt += range.link_ppt.incr) {
@@ -35,6 +37,8 @@ Evaluator< T >::Evaluator( const ConfigRange & range )
     }
     if ( range.link_ppt.isOne() ) { break; }
   }
+
+  _sample_configs(sample);
 }
 
 template <typename T>
@@ -54,6 +58,21 @@ ProblemBuffers::Problem Evaluator< T >::_ProblemSettings_DNA( void ) const
   }
 
   return ret;
+}
+
+template <typename T>
+void Evaluator< T >::_sample_configs(const int num)
+{
+  if (num == 0)
+  {
+    return;
+  }
+  PRNG sample_prng( _prng_seed ); // Is it an issue that we are using the same seed that we do for the simulations themselves?
+  shuffle(_configs.begin(), _configs.end(), sample_prng);
+  std::vector<NetConfig>::const_iterator first = _configs.begin();
+  std::vector<NetConfig>::const_iterator last = _configs.begin() + num;
+  std::vector<NetConfig> sample(first, last);
+  _sampled_configs = sample;
 }
 
 template <>
@@ -195,9 +214,14 @@ Evaluator< T >::Outcome::Outcome( const AnswerBuffers::Outcome & dna )
 
 template <typename T>
 typename Evaluator< T >::Outcome Evaluator< T >::score( T & run_actions,
-				     const bool trace, const double carefulness ) const
+				     const bool trace, const double carefulness, const bool sample ) const
 {
-  return score( run_actions, _prng_seed, _configs, trace, _tick_count * carefulness );
+  if (!sample)
+  {
+    return score( run_actions, _prng_seed, _configs, trace, _tick_count * carefulness );
+  }
+
+  return score( run_actions, _prng_seed, _sampled_configs, trace, _tick_count * carefulness );
 }
 
 

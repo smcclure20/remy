@@ -15,13 +15,13 @@ Whisker::Whisker( const unsigned int s_window_increment, const double s_window_m
 {
 }
 
-Whisker::Whisker( const Whisker & other )
-  : Action( other ),
-    _window_increment( other._window_increment ),
-    _window_multiple( other._window_multiple ),
-    _intersend( other._intersend )
-{
-}
+// Whisker::Whisker( const Whisker & other )
+//   : Action( other ),
+//     _window_increment( other._window_increment ),
+//     _window_multiple( other._window_multiple ),
+//     _intersend( other._intersend )
+// {
+// }
 
 Whisker::Whisker( const RemyBuffers::Whisker & dna )
   : Action( dna.domain() ), 

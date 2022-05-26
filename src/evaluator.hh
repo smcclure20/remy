@@ -34,17 +34,21 @@ private:
   unsigned int _tick_count;
 
   std::vector< NetConfig > _configs;
+  std::vector< NetConfig > _sampled_configs;
 
   ProblemBuffers::Problem _ProblemSettings_DNA ( void ) const;
 
+  void _sample_configs(const int num);
+
 public:
-  Evaluator( const ConfigRange & range );
+  Evaluator( const ConfigRange & range, const int sample = 0 );
   
   ProblemBuffers::Problem DNA( const T & actions ) const;
 
   Outcome score( T & run_actions,
 		const bool trace = false,
-		const double carefulness = 1) const;
+		const double carefulness = 1,
+    const bool sample = false) const;
 
   static Evaluator::Outcome parse_problem_and_evaluate( const ProblemBuffers::Problem & problem );
 
@@ -53,6 +57,8 @@ public:
 			const std::vector<NetConfig> & configs,
 			const bool trace,
 			const unsigned int ticks_to_run );
+
+  int num_configs(void) const { if (_sampled_configs.empty()) { return _configs.size(); } else { return _sampled_configs.size(); } };
 };
 
 #endif

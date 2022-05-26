@@ -41,8 +41,10 @@ void Breeder< T >::apply_best_split( T & tree, const unsigned int generation ) c
 template <typename T, typename A>
 ActionImprover< T, A >::ActionImprover( const Evaluator< T > & s_evaluator,
 				  const T & tree,
-				  const double score_to_beat)
+				  const double score_to_beat,
+          const bool sample)
   : eval_( s_evaluator ),
+    sample_(sample),
     tree_( tree ),
     score_to_beat_( score_to_beat )
 {}
@@ -50,8 +52,10 @@ ActionImprover< T, A >::ActionImprover( const Evaluator< T > & s_evaluator,
 template <typename T, typename A>
 void ActionImprover< T, A >::evaluate_replacements(const vector<A> &replacements,
     vector< pair< const A &, future< pair< bool, double > > > > &scores,
-    const double carefulness ) 
+    const double carefulness) 
 {
+  // printf("Evaluating %d replacements on %d networks", replacements.size(), eval_._configs.size())
+  cout << "Evaluating " << replacements.size() << " replacements on... " << eval_.num_configs() << " networks.\n";
   for ( const auto & test_replacement : replacements ) {
     if ( eval_cache_.find( test_replacement ) == eval_cache_.end() ) {
       /* need to fire off a new thread to evaluate */
@@ -59,12 +63,13 @@ void ActionImprover< T, A >::evaluate_replacements(const vector<A> &replacements
                            async( launch::async, [] ( const Evaluator< T > & e,
                                                       const A & r,
                                                       const T & tree,
-                                                      const double carefulness ) {
+                                                      const double carefulness,
+                                                      const bool sample ) {
                                     T replaced_tree( tree );
                                     const bool found_replacement __attribute((unused)) = replaced_tree.replace( r );
                                     assert( found_replacement );
-                                    return make_pair( true, e.score( replaced_tree, false, carefulness ).score ); },
-                                  eval_, test_replacement, tree_, carefulness ) );
+                                    return make_pair( true, e.score( replaced_tree, false, carefulness, sample ).score ); },
+                                  eval_, test_replacement, tree_, carefulness, sample_ ) );
     } else {
       /* we already know the score */
       scores.emplace_back( test_replacement,
@@ -79,7 +84,7 @@ vector<A> ActionImprover< T, A >::early_bail_out( const vector< A > &replacement
         const double carefulness, const double quantile_to_keep )
 {  
   vector< pair< const A &, future< pair< bool, double > > > > scores;
-  evaluate_replacements( replacements, scores, carefulness );
+  evaluate_replacements( replacements, scores, carefulness);
   
   accumulator_t_right acc(
      tag::tail< boost::accumulators::right >::cache_size = scores.size() );
@@ -120,7 +125,7 @@ double ActionImprover< T, A >::improve( A & action_to_improve )
   vector<A> top_replacements = early_bail_out( replacements, 0.1, 0.5 );
 
   /* find best replacement */
-  evaluate_replacements( top_replacements, scores, 1 );
+  evaluate_replacements( top_replacements, scores, 1);
   for ( auto & x : scores ) {
      const A & replacement( x.first );
      const auto outcome( x.second.get() );
