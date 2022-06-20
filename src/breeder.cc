@@ -38,50 +38,6 @@ void Breeder< T >::apply_best_split( T & tree, const unsigned int generation ) c
   }
 }
 
-template <typename T>
-typename Evaluator< T >::Outcome Breeder< T >::eval_parallel( T & tree, bool sample )
-{
-  const Evaluator< T > eval( _options.config_range, 100 );
-  tree.reset_counts();
-  std::vector< future < typename Evaluator< T >::Outcome > > outcomes;
-  std::vector< NetConfig > configs = eval.get_configs(sample);
-
-  printf("Evaluating on %d networks...\n", (int)configs.size());
-  for ( const auto & config : configs ) {
-    outcomes.emplace_back(async(launch::async, [] ( const Evaluator< T > & e,
-                                                    const T & run_actions,
-                                                    const NetConfig & config,
-                                                    const bool trace,
-                                                    const double carefulness) { 
-                                          T tree( run_actions );
-                                          return e.score_parallel(tree, config, trace, carefulness); },
-                                          eval, tree, config, false, (double) 1 ));
-  }                 
-  
-  typename Evaluator< T >::Outcome total_outcome;
-  bool initial = true;
-  int total = 0;
-  for (auto & outcome_future : outcomes ){
-      outcome_future.wait();
-      auto outcome = outcome_future.get();
-      total_outcome.score += outcome.score;
-      total += outcome.used_actions.total_queries();
-      if ( initial )
-      {
-        total_outcome.used_actions = outcome.used_actions;
-        initial = false;
-      }
-      else
-      {
-        total_outcome.used_actions.add_tree_counts(outcome.used_actions);
-      } 
-  }
-
-  printf("[COMPLETE] Total whisker queries: %d (%d)\n", total_outcome.used_actions.total_queries(), total);
-  return total_outcome;
-  
-}
-
 template <typename T, typename A>
 ActionImprover< T, A >::ActionImprover( const Evaluator< T > & s_evaluator,
 				  const T & tree,

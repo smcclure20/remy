@@ -20,8 +20,7 @@ Evaluator< WhiskerTree >::Outcome RatBreeder::improve( WhiskerTree & whiskers )
 
     printf("Finding most used whisker...\n");
     auto start = std::chrono::system_clock::now();
-    // auto outcome( eval_parallel(whiskers, true)); // this currently makes things worse
-    auto outcome( eval.score( whiskers, false, 1, true ) ); // TODO: Better option would be to parallelize the network configs
+    auto outcome( eval.score( whiskers, false, 1, true ) );
     auto end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end-start;
     std::cout << "elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
