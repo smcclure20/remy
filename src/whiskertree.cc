@@ -8,7 +8,14 @@
 using namespace std;
 
 WhiskerTree::WhiskerTree()
-  : _domain( Memory(), MAX_MEMORY() ),
+  : _domain( Memory(), MAX_MEMORY() ), 
+    _children(),
+    _leaf( 1, Whisker( _domain ) )
+{
+}
+
+WhiskerTree::WhiskerTree( const std::vector< Axis > signals)
+  : _domain( Memory(), MAX_MEMORY(), signals), 
     _children(),
     _leaf( 1, Whisker( _domain ) )
 {
@@ -59,6 +66,20 @@ const Whisker & WhiskerTree::use_whisker( const Memory & _memory, const bool tra
   return *ret;
 }
 
+int WhiskerTree::get_whisker_count( const Memory & _memory) const
+{
+  const Whisker * ret( whisker( _memory ) );
+
+  if ( !ret ) {
+    fprintf( stderr, "ERROR: No whisker found for %s\n", _memory.str().c_str() );
+    exit( 1 );
+  }
+
+  assert( ret );
+
+  return ret->count();
+}
+
 const Whisker * WhiskerTree::whisker( const Memory & _memory ) const
 {
   if ( !_domain.contains( _memory ) ) {
@@ -106,6 +127,17 @@ const Whisker * WhiskerTree::most_used( const unsigned int max_generation ) cons
   }
 
   return ret;
+}
+
+void WhiskerTree::add_tree_counts( const WhiskerTree & tree) // Assumes trees are copies of on another with different usages (TODO: ADD ASSERTS)
+{
+  if ( is_leaf() ) { // TODO: NEED TO UNDERSTAND _LEAF
+    _leaf.front().set_count(_leaf.front().count() + tree.get_whisker_count(_leaf.front().domain().range_median()));
+  } else {
+    for ( auto &x : _children ) {
+      x.add_tree_counts( tree );
+    }
+  }
 }
 
 void WhiskerTree::reset_generation( void )
@@ -179,7 +211,7 @@ bool WhiskerTree::replace( const Whisker & src, const WhiskerTree & dst )
   return false;
 }
 
-unsigned int WhiskerTree::total_whisker_queries( void ) const
+unsigned int WhiskerTree::total_queries( void ) const
 {
   if ( is_leaf() ) {
     assert( _children.empty() );
@@ -191,12 +223,12 @@ unsigned int WhiskerTree::total_whisker_queries( void ) const
 		     0,
 		     []( const unsigned int sum, 
 			 const WhiskerTree & x )
-		     { return sum + x.total_whisker_queries(); } );
+		     { return sum + x.total_queries(); } );
 }
 
 string WhiskerTree::str() const
 {
-  return str( total_whisker_queries() );
+  return str( total_queries() );
 }
 
 string WhiskerTree::str( const unsigned int total ) const

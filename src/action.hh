@@ -36,6 +36,7 @@ public:
   void use( void ) const { _domain.use(); }
   void reset_count( void ) const { _domain.reset_count(); }
   unsigned int count( void ) const { return _domain.count(); }
+  void set_count ( int value ) const { _domain.set_count( value ); }
 
   const unsigned int & generation( void ) const { return _generation; }
   const MemoryRange & domain( void ) const { return _domain; }
@@ -59,7 +60,7 @@ public:
 
     bool eligible_value( const T & value ) const { return value >= min_value and value <= max_value; }
 
-    std::vector< T > alternatives( const T & value, bool active ) const 
+    std::vector< T > alternatives( const T & value, bool active, int limit = 1000 ) const 
     {
       if ( !eligible_value( value ) ) {
         printf("Ineligible value: %s is not between %s and %s\n", to_string( value ).c_str(), to_string( min_value ).c_str(), to_string( max_value ).c_str());
@@ -78,11 +79,11 @@ public:
         const T proposed_value_up = value + proposed_change;
         const T proposed_value_down = value - proposed_change;
 
-        if ( eligible_value( proposed_value_up ) ) {
+        if (( eligible_value( proposed_value_up ) ) && ( (int)ret.size() < limit )) {
           ret.push_back( proposed_value_up );
         }
 
-        if ( eligible_value( proposed_value_down ) ) {
+        if (( eligible_value( proposed_value_down ) ) && ( (int)ret.size() < limit ))  {
           ret.push_back( proposed_value_down );
         }
       }

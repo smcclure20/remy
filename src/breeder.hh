@@ -58,6 +58,8 @@ public:
   virtual ~Breeder() {};
 
   virtual typename Evaluator< T >::Outcome improve( T & whiskers ) = 0;
+
+  typename Evaluator< T >::Outcome eval_parallel( T & tree, bool sample );
 };
 
 #endif

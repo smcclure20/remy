@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <future>
 
 #include "random.hh"
 #include "whiskertree.hh"
@@ -58,7 +59,20 @@ public:
 			const bool trace,
 			const unsigned int ticks_to_run );
 
+  static Outcome score_config( T & run_actions,
+             const unsigned int prng_seed,
+             const NetConfig & config,
+             const bool trace,
+             const unsigned int ticks_to_run );
+
+  Outcome score_parallel( T & run_actions, 
+    const NetConfig & config,
+    const bool trace = false, 
+    const double carefulness = 1) const; 
+
   int num_configs(void) const { if (_sampled_configs.empty()) { return _configs.size(); } else { return _sampled_configs.size(); } };
+
+  std::vector< NetConfig > get_configs (const bool sampled) const {if (sampled) { return _sampled_configs; } else { return _configs; } }; // TODO: how to make sure these are immutable
 };
 
 #endif

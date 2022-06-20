@@ -47,9 +47,12 @@ vector< Whisker > Whisker::next_generation( bool optimize_window_increment, bool
 {
   vector< Whisker> ret;
 
-  auto window_increment_alternatives = get_optimizer().window_increment.alternatives( _window_increment, optimize_window_increment );
-  auto window_multiple_alternatives = get_optimizer().window_multiple.alternatives( _window_multiple, optimize_window_multiple );
-  auto intersend_alternatives = get_optimizer().intersend.alternatives( _intersend, optimize_intersend );
+  auto window_increment_alternatives = get_optimizer().window_increment.alternatives( _window_increment, optimize_window_increment, 6 );
+  auto window_multiple_alternatives = get_optimizer().window_multiple.alternatives( _window_multiple, optimize_window_multiple, 6 );
+  auto intersend_alternatives = get_optimizer().intersend.alternatives( _intersend, optimize_intersend, 6 );
+
+  printf("Window increment alternatives (%d), window multiple alternatives (%d), intersend alternatives (%d)\n", 
+         (int)window_increment_alternatives.size(), (int)window_multiple_alternatives.size(), (int)intersend_alternatives.size());
 
   printf("Alternatives: window increment %u to %u, window multiple %f to %f, intersend %f to %f\n",
          *(min_element(window_increment_alternatives.begin(), window_increment_alternatives.end())),
@@ -59,6 +62,19 @@ vector< Whisker > Whisker::next_generation( bool optimize_window_increment, bool
          *(min_element(intersend_alternatives.begin(), intersend_alternatives.end())),
          *(max_element(intersend_alternatives.begin(), intersend_alternatives.end()))
   );
+
+  // printf("Alt windows:\n");
+  // for ( auto & alt_window : window_increment_alternatives){
+  //   printf("%d, ", alt_window);
+  // }
+  // printf("\nAlt multiples:\n");
+  // for ( auto & alt_multiple : window_multiple_alternatives){
+  //   printf("%f, ", alt_multiple);
+  // }
+  // printf("\nAlt intersends:\n");
+  // for ( auto & alt_intersend : intersend_alternatives){
+  //   printf("%f, ", alt_intersend);
+  // }
 
   for ( const auto & alt_window : window_increment_alternatives ) {
     for ( const auto & alt_multiple : window_multiple_alternatives ) {

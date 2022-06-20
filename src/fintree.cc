@@ -56,6 +56,20 @@ const Fin & FinTree::use_fin( const Memory & _memory, const bool track ) const
   return *ret;
 }
 
+int FinTree::get_fin_count( const Memory & _memory) const
+{
+  const Fin * ret( fin( _memory ) );
+
+  if ( !ret ) {
+    fprintf( stderr, "ERROR: No fin found for %s\n", _memory.str().c_str() );
+    exit( 1 );
+  }
+
+  assert( ret );
+
+  return ret->count();
+}
+
 const Fin * FinTree::fin( const Memory & _memory ) const
 {
   if ( !_domain.contains( _memory ) ) {
@@ -103,6 +117,17 @@ const Fin * FinTree::most_used( const unsigned int max_generation ) const
   }
 
   return ret;
+}
+
+void FinTree::add_tree_counts( const FinTree & tree) // Assumes trees are copies of on another with different usages (TODO: ADD ASSERTS)
+{
+  if ( is_leaf() ) {
+    _leaf.front().set_count(_leaf.front().count() + tree.get_fin_count(_leaf.front().domain().range_median()));
+  } else {
+    for ( auto &x : _children ) {
+      x.add_tree_counts( tree );
+    }
+  }
 }
 
 void FinTree::reset_generation( void )
@@ -176,7 +201,7 @@ bool FinTree::replace( const Fin & src, const FinTree & dst )
   return false;
 }
 
-unsigned int FinTree::total_fin_queries( void ) const
+unsigned int FinTree::total_queries( void ) const
 {
   if ( is_leaf() ) {
     assert( _children.empty() );
@@ -188,12 +213,12 @@ unsigned int FinTree::total_fin_queries( void ) const
 		     0,
 		     []( const unsigned int sum, 
 			 const FinTree & x )
-		     { return sum + x.total_fin_queries(); } );
+		     { return sum + x.total_queries(); } );
 }
 
 string FinTree::str() const
 {
-  return str( total_fin_queries() );
+  return str( total_queries() );
 }
 
 string FinTree::str( const unsigned int total ) const

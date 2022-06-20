@@ -17,6 +17,23 @@ void print_range( const Range & range, const string & name )
     range.low, range.incr, range.high );
 }
 
+int get_option_value( const string arg, const string & name ) 
+{
+  for ( int i = 0; i < arg.length(); i++ ) 
+  {
+    if ( !isdigit( arg[i] ) )
+    {
+      if ( i == 0 )
+      {
+        fprintf( stderr, "Could not parse integer option (%s).\n", name.c_str() );
+	      exit( 1 );
+      }
+
+      return atoi( arg.substr( 0, i ).c_str() );
+    }
+  }
+}
+
 int main( int argc, char *argv[] )
 {
   WhiskerTree whiskers;
@@ -25,6 +42,7 @@ int main( int argc, char *argv[] )
   WhiskerImproverOptions whisker_options;
   RemyBuffers::ConfigRange input_config;
   string config_filename;
+  std::vector< Axis > signals;
 
   for ( int i = 1; i < argc; i++ ) {
     string arg( argv[ i ] );
@@ -32,20 +50,20 @@ int main( int argc, char *argv[] )
       string filename( arg.substr( 3 ) );
       int fd = open( filename.c_str(), O_RDONLY );
       if ( fd < 0 ) {
-	perror( "open" );
-	exit( 1 );
+	      perror( "open" );
+	      exit( 1 );
       }
 
       RemyBuffers::WhiskerTree tree;
       if ( !tree.ParseFromFileDescriptor( fd ) ) {
-	fprintf( stderr, "Could not parse %s.\n", filename.c_str() );
-	exit( 1 );
+	      fprintf( stderr, "Could not parse %s.\n", filename.c_str() );
+	      exit( 1 );
       }
       whiskers = WhiskerTree( tree );
 
       if ( close( fd ) < 0 ) {
-	perror( "close" );
-	exit( 1 );
+	      perror( "close" );
+	      exit( 1 );
       }
 
     } else if ( arg.substr( 0, 3 ) == "of=" ) {
@@ -62,6 +80,10 @@ int main( int argc, char *argv[] )
           whisker_options.optimize_window_multiple = true;
         } else if ( c == 'r' ) {
           whisker_options.optimize_intersend = true;
+        } else if ( c == 'l' ) { 
+          whisker_options.alternates_limit = get_option_value( arg.substr( arg.find("l") ), "l" );
+        } else if ( c == 's' ) {
+          whisker_options.sample_size = get_option_value( arg.substr( arg.find("s") ), "s" );
         } else {
           fprintf( stderr, "Invalid optimize option: %c\n", c );
           exit( 1 );
@@ -83,6 +105,25 @@ int main( int argc, char *argv[] )
         perror( "close" );
         exit( 1 );
       }
+    }
+    else if (arg.substr(0, 4) == "sig=" ) {
+        for ( char & c : arg.substr( 4 ) ) {
+          if ( c == 'd' ) {
+            signals.emplace_back(RemyBuffers::MemoryRange::RTT_RATIO);
+          } else if ( c == 's' ) {
+            signals.emplace_back(RemyBuffers::MemoryRange::SEND_EWMA);
+          } else if ( c == 'r' ) {
+            signals.emplace_back(RemyBuffers::MemoryRange::REC_EWMA);
+            signals.emplace_back(RemyBuffers::MemoryRange::SLOW_REC_EWMA);
+          } else if ( c == 'l' ) {
+            signals.emplace_back(RemyBuffers::MemoryRange::SINCE_LAST_LOSS);
+          } else {
+            fprintf( stderr, "Invalid signal option: %c\n", c );
+            exit( 1 );
+          }
+      }
+
+      whiskers = WhiskerTree(signals);
     }
   }
 

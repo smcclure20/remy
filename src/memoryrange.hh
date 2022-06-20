@@ -40,6 +40,7 @@ public:
   void use( void ) const { _count++; }
   unsigned int count( void ) const { return _count; }
   void reset_count( void ) const { _count = 0; }
+  void set_count (int value) const { _count = value; }
 
   void track( const Memory & query ) const;
 

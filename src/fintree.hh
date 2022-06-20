@@ -23,10 +23,13 @@ public:
   FinTree( const Fin & fin, const bool bisect );
 
   const Fin & use_fin( const Memory & _memory, const bool track ) const;
+  int get_fin_count( const Memory & _memory) const;
 
   bool replace( const Fin & w );
   bool replace( const Fin & src, const FinTree & dst );
   const Fin * most_used( const unsigned int max_generation ) const;
+
+  void add_tree_counts( const FinTree & tree);
 
   void reset_counts( void );
   void promote( const unsigned int generation );
@@ -34,7 +37,7 @@ public:
 
   std::string str( void ) const;
   std::string str( const unsigned int total ) const;
-  unsigned int total_fin_queries( void ) const;
+  unsigned int total_queries( void ) const;
 
   unsigned int num_children( void ) const;
 
