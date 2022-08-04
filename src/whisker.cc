@@ -15,14 +15,6 @@ Whisker::Whisker( const unsigned int s_window_increment, const double s_window_m
 {
 }
 
-// Whisker::Whisker( const Whisker & other )
-//   : Action( other ),
-//     _window_increment( other._window_increment ),
-//     _window_multiple( other._window_multiple ),
-//     _intersend( other._intersend )
-// {
-// }
-
 Whisker::Whisker( const RemyBuffers::Whisker & dna )
   : Action( dna.domain() ), 
     _window_increment( dna.window_increment() ),
@@ -43,13 +35,17 @@ RemyBuffers::Whisker Whisker::DNA( void ) const
   return ret;
 }
 
-vector< Whisker > Whisker::next_generation( bool optimize_window_increment, bool optimize_window_multiple, bool optimize_intersend ) const
+vector< Whisker > Whisker::next_generation( bool optimize_window_increment, bool optimize_window_multiple, bool optimize_intersend, int alternates_limit ) const
 {
   vector< Whisker> ret;
 
-  auto window_increment_alternatives = get_optimizer().window_increment.alternatives( _window_increment, optimize_window_increment, 6 );
-  auto window_multiple_alternatives = get_optimizer().window_multiple.alternatives( _window_multiple, optimize_window_multiple, 6 );
-  auto intersend_alternatives = get_optimizer().intersend.alternatives( _intersend, optimize_intersend, 6 );
+  int optimized_values = int( optimize_window_increment ) + int( optimize_window_multiple ) + int( optimize_intersend );
+  double power = 1 / (double) optimized_values;
+  int alts_per_dimension = std::round(pow( alternates_limit, power ));
+
+  auto window_increment_alternatives = get_optimizer().window_increment.alternatives( _window_increment, optimize_window_increment, alts_per_dimension );
+  auto window_multiple_alternatives = get_optimizer().window_multiple.alternatives( _window_multiple, optimize_window_multiple, alts_per_dimension );
+  auto intersend_alternatives = get_optimizer().intersend.alternatives( _intersend, optimize_intersend, alts_per_dimension );
 
   printf("Window increment alternatives (%d), window multiple alternatives (%d), intersend alternatives (%d)\n", 
          (int)window_increment_alternatives.size(), (int)window_multiple_alternatives.size(), (int)intersend_alternatives.size());
@@ -62,19 +58,6 @@ vector< Whisker > Whisker::next_generation( bool optimize_window_increment, bool
          *(min_element(intersend_alternatives.begin(), intersend_alternatives.end())),
          *(max_element(intersend_alternatives.begin(), intersend_alternatives.end()))
   );
-
-  // printf("Alt windows:\n");
-  // for ( auto & alt_window : window_increment_alternatives){
-  //   printf("%d, ", alt_window);
-  // }
-  // printf("\nAlt multiples:\n");
-  // for ( auto & alt_multiple : window_multiple_alternatives){
-  //   printf("%f, ", alt_multiple);
-  // }
-  // printf("\nAlt intersends:\n");
-  // for ( auto & alt_intersend : intersend_alternatives){
-  //   printf("%f, ", alt_intersend);
-  // }
 
   for ( const auto & alt_window : window_increment_alternatives ) {
     for ( const auto & alt_multiple : window_multiple_alternatives ) {

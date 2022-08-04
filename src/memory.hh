@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <queue>
 
 #include "packet.hh"
 #include "dna.pb.h"
@@ -18,11 +19,12 @@ private:
   DataType _slow_rec_rec_ewma;
   DataType _rtt_diff;
   DataType _queueing_delay;
-  DataType _since_last_loss;
+  DataType _recent_loss;
 
   double _last_tick_sent;
   double _last_tick_received;
   double _min_rtt;
+  std::queue< double > _losses;
 
 public:
   Memory( const std::vector< DataType > & s_data )
@@ -32,10 +34,11 @@ public:
       _slow_rec_rec_ewma( s_data.at( 3 ) ),
       _rtt_diff( s_data.at(4) ),
       _queueing_delay( s_data.at(5) ),
-      _since_last_loss( s_data.at(6) ),
+      _recent_loss( s_data.at(6) ),
       _last_tick_sent( 0 ),
       _last_tick_received( 0 ),
-      _min_rtt( 0 )
+      _min_rtt( 0 ),
+      _losses( )
   {}
 
   Memory()
@@ -45,18 +48,19 @@ public:
       _slow_rec_rec_ewma( 0 ),
       _rtt_diff( 0 ),
       _queueing_delay( 0 ),
-      _since_last_loss( 0 ),
+      _recent_loss( 0 ),
       _last_tick_sent( 0 ),
       _last_tick_received( 0 ),
-      _min_rtt( 0 )
+      _min_rtt( 0 ),
+      _losses( )
   {}
 
-  void reset( void ) { _rec_send_ewma = _rec_rec_ewma = _rtt_ratio = _slow_rec_rec_ewma = _rtt_diff = _queueing_delay = _since_last_loss = _last_tick_sent = _last_tick_received = _min_rtt = 0; }
+  void reset( void ) { _rec_send_ewma = _rec_rec_ewma = _rtt_ratio = _slow_rec_rec_ewma = _rtt_diff = _queueing_delay = _recent_loss = _last_tick_sent = _last_tick_received = _min_rtt = 0; _losses = std::queue< double > (); }
 
   static const unsigned int datasize = 7;
   
-  const DataType & field( unsigned int num ) const { return num == 0 ? _rec_send_ewma : num == 1 ? _rec_rec_ewma : num == 2 ? _rtt_ratio : num == 3 ? _slow_rec_rec_ewma : num == 4 ? _rtt_diff : num == 5 ? _queueing_delay : _since_last_loss ; }
-  DataType & mutable_field( unsigned int num )     { return num == 0 ? _rec_send_ewma : num == 1 ? _rec_rec_ewma : num == 2 ? _rtt_ratio : num == 3 ? _slow_rec_rec_ewma : num == 4 ? _rtt_diff : num == 5 ? _queueing_delay : _since_last_loss ; }
+  const DataType & field( unsigned int num ) const { return num == 0 ? _rec_send_ewma : num == 1 ? _rec_rec_ewma : num == 2 ? _rtt_ratio : num == 3 ? _slow_rec_rec_ewma : num == 4 ? _rtt_diff : num == 5 ? _queueing_delay : _recent_loss ; }
+  DataType & mutable_field( unsigned int num )     { return num == 0 ? _rec_send_ewma : num == 1 ? _rec_rec_ewma : num == 2 ? _rtt_ratio : num == 3 ? _slow_rec_rec_ewma : num == 4 ? _rtt_diff : num == 5 ? _queueing_delay : _recent_loss ; }
   
   void packet_sent( const Packet & packet __attribute((unused)) ) {}
   void packets_received( const std::vector< Packet > & packets, const unsigned int flow_id, const int largest_ack );

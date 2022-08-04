@@ -258,6 +258,22 @@ unsigned int WhiskerTree::num_children( void ) const
   return _children.size();
 }
 
+unsigned int WhiskerTree::total_whiskers( void ) const
+{
+  // TODO: Add this to fintree!
+  if ( is_leaf() ) {
+    assert( _leaf.size() == 1 );
+    return 1;
+  }
+
+  int total = 0;
+  for ( const auto &x : _children ) {
+    total += x.total_whiskers();
+  }
+
+  return total;
+}
+
 bool WhiskerTree::is_leaf( void ) const
 {
   return !_leaf.empty();

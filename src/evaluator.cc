@@ -114,7 +114,9 @@ Evaluator< WhiskerTree >::Outcome Evaluator< WhiskerTree >::score( WhiskerTree &
       SenderGang<Rat, TimeSwitchedSender<Rat>>> network1( Rat( run_whiskers, trace ), run_prng, x );
     network1.run_simulation( ticks_to_run );
     
-    the_outcome.score += network1.senders().utility();
+    the_outcome.score += network1.senders().utility( (double) (ticks_to_run - x.delay) );
+    // the_outcome.score += network1.senders().utility( );
+    // printf("Network utility: %f\n", network1.senders().utility( (double) (ticks_to_run - x.delay) ));
     the_outcome.throughputs_delays.emplace_back( x, network1.senders().throughputs_delays() );
   }
 

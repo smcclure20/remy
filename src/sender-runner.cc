@@ -9,6 +9,7 @@
 
 #include "evaluator.hh"
 #include "configrange.hh"
+#include "whiskertree.hh"
 using namespace std;
 
 template <typename T>
@@ -50,11 +51,11 @@ int main( int argc, char *argv[] )
   unsigned int num_senders = 2;
   double link_ppt = 1.0;
   double delay = 100.0;
-  double mean_on_duration = 5000.0;
-  double mean_off_duration = 5000.0;
+  double mean_on_duration = 500.0;
+  double mean_off_duration = 500.0;
   double buffer_size = numeric_limits<unsigned int>::max();
   double stochastic_loss_rate = 0;
-  unsigned int simulation_ticks = 1000000;
+  unsigned int simulation_ticks = 100000;
 
   for ( int i = 1; i < argc && !is_poisson; i++ ) {
     string arg( argv[ i ] );
@@ -92,6 +93,7 @@ int main( int argc, char *argv[] )
         }
         whiskers = WhiskerTree( tree );  
         print_tree< RemyBuffers::WhiskerTree >(tree);
+        printf("Number of rules in the tree: %d\n", WhiskerTree(tree).total_whiskers());
       }
 
       if ( close( fd ) < 0 ) {

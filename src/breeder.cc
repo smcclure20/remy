@@ -13,9 +13,9 @@ typedef accumulator_set< double, stats< tag::tail_quantile <boost::accumulators:
   accumulator_t_right;
 
 template <typename T>
-void Breeder< T >::apply_best_split( T & tree, const unsigned int generation ) const
+void Breeder< T >::apply_best_split( T & tree, const unsigned int generation, int sample ) const
 {
-  const Evaluator< T > eval( _options.config_range, _whisker_options.sample_size );
+  const Evaluator< T > eval( _options.config_range, sample );
   auto outcome( eval.score( tree, true, 1, true ) );
 
   while ( 1 ) {
@@ -93,6 +93,7 @@ vector<A> ActionImprover< T, A >::early_bail_out( const vector< A > &replacement
     const double score( x.second.get().second );
     acc( score );
     raw_scores.push_back( score );
+    // printf("Score: %f\n", score);
   }
   
   /* Set the lower bound to be MAX_PERCENT_ERROR worse than the current best score */
@@ -111,26 +112,45 @@ vector<A> ActionImprover< T, A >::early_bail_out( const vector< A > &replacement
       top_replacements.push_back( replacement );
     }
   }
+
+  if ( (int) top_replacements.size() == 0) {
+    printf("Found 0 eligible replacements after early bail out.\n");
+    printf("Quantile bound %f\n", quantile_bound);
+    printf("Lower bound %f\n", lower_bound);
+    printf("Cutoff %f\n", cutoff);
+    printf("Quantile %f\n", quantile_to_keep);
+    // for ( auto & x : raw_scores ) {
+    //   printf("Score: %f\n", x);
+    // }
+  }
   return top_replacements;
 }
 
 template <typename T, typename A>
 double ActionImprover< T, A >::improve( A & action_to_improve )
 {
+  printf("Score to beat: %f\n", score_to_beat_);
   auto replacements = get_replacements( action_to_improve );
   vector< pair< const A &, future< pair< bool, double > > > > scores;
 
   /* Run for 10% simulation time to get estimates for the final score 
      and discard bad performing ones early on. */
-  vector<A> top_replacements = early_bail_out( replacements, 0.1, 0.5 );
+  vector<A> top_replacements = early_bail_out( replacements, 0.5, 0.5 );
 
   /* find best replacement */
   evaluate_replacements( top_replacements, scores, 1);
+  double lowest = -numeric_limits<double>::max();
+  double best_score = lowest;
   for ( auto & x : scores ) {
      const A & replacement( x.first );
      const auto outcome( x.second.get() );
      const bool was_new_evaluation( outcome.first );
      const double score( outcome.second );
+     
+     //  printf("Score: %f\n", score);
+     if (best_score == lowest || score > best_score) {
+       best_score = score;
+     }
 
      /* should we cache this result? */
      if ( was_new_evaluation ) {
@@ -144,6 +164,9 @@ double ActionImprover< T, A >::improve( A & action_to_improve )
   }
 
   cout << "Chose " << action_to_improve.str() << endl;
+  if (scores.size() > 0 ){
+     printf("Best score: %f\n", best_score);
+  }
 
   return score_to_beat_;
 }

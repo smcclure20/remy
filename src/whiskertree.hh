@@ -44,6 +44,7 @@ public:
   unsigned int total_queries( void ) const;
 
   unsigned int num_children( void ) const;
+  unsigned int total_whiskers( void ) const;
 
   bool is_leaf( void ) const;
 

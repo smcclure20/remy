@@ -44,7 +44,7 @@ public:
     : internal_tick( 0 ),
       next_switch_tick( start_tick ),
       sender( s_sender ),
-      utility(),
+      utility( start_tick ),
       sending( false ),
       id( s_id )
   {}
@@ -153,6 +153,7 @@ public:
   void tick( NextHop & next, Receiver & rec, const double & tickno );
 
   double utility( void ) const;
+  double utility( const double last_sendable_tick ) const;
 
   std::vector< std::pair< double, double > > throughputs_delays( void ) const;
   std::vector< SenderDataPoint > statistics_for_log( void ) const;

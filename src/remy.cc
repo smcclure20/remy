@@ -19,7 +19,7 @@ void print_range( const Range & range, const string & name )
 
 int get_option_value( const string arg, const string & name ) 
 {
-  for ( int i = 0; i < arg.length(); i++ ) 
+  for ( int i = 0; i < (int) arg.length(); i++ ) 
   {
     if ( !isdigit( arg[i] ) )
     {
@@ -32,6 +32,10 @@ int get_option_value( const string arg, const string & name )
       return atoi( arg.substr( 0, i ).c_str() );
     }
   }
+
+  fprintf( stderr, "Could not parse integer option (%s).\n", name.c_str() );
+	exit( 1 );
+
 }
 
 int main( int argc, char *argv[] )

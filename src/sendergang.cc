@@ -246,6 +246,33 @@ double SenderGang<SenderType, SwitcherType>::utility( void ) const
     total_utility += x.utility.utility();
   }
 
+  // if ( total_utility / _gang.size()  < (double) -10000 ){
+  //   for ( auto &x : _gang ) {
+  //     printf("Tput: %f, delay: %f, utility: %f\n", x.utility.average_throughput_normalized_to_equal_share(), x.utility.average_delay(), x.utility.utility(  ));
+  //   }
+  // }
+
+  return total_utility / _gang.size(); /* mean utility per sender */
+}
+
+template <class SenderType, class SwitcherType>
+double SenderGang<SenderType, SwitcherType>::utility( const double last_sendable_tick ) const
+{
+  double total_utility = 0.0;
+
+  /* If gang is empty, return zero */
+  if ( _gang.empty() ) return 0.0;
+
+  for ( auto &x : _gang ) {
+    total_utility += x.utility.utility( last_sendable_tick );
+  }
+
+  // if ( total_utility / _gang.size()  < (double) -10000 ){
+  //   for ( auto &x : _gang ) {
+  //     printf("Tput: %f, delay: %f, utility: %f\n", x.utility.average_throughput_normalized_to_equal_share(), x.utility.average_delay(), x.utility.utility( last_sendable_tick ));
+  //   }
+  // }
+
   return total_utility / _gang.size(); /* mean utility per sender */
 }
 

@@ -12,11 +12,14 @@ private:
   double _tick_share_sending;
   unsigned int _packets_received;
   double _total_delay;
+  double _first_send_tick;
 
 public:
-  Utility( void ) : _tick_share_sending( 0 ), _packets_received( 0 ), _total_delay( 0 ) {}
+  Utility( void ) : _tick_share_sending( 0 ), _packets_received( 0 ), _total_delay( 0 ), _first_send_tick( 0 ) {}
 
-  void sending_duration( const double & duration, const unsigned int num_sending ) { _tick_share_sending += duration / double( num_sending ); }
+  Utility( double start_tick ) : _tick_share_sending( 0 ), _packets_received( 0 ), _total_delay( 0 ), _first_send_tick( start_tick ) {}
+
+  void sending_duration( const double & duration, const unsigned int num_sending ) { _tick_share_sending += duration / double( num_sending );}
   void packets_received( const std::vector< Packet > & packets ) {
     _packets_received += packets.size();
 
@@ -43,13 +46,19 @@ public:
     return double( _total_delay ) / double( _packets_received );
   }
 
-  double utility( void ) const
+  double utility( double last_sendable_tick = std::numeric_limits<double>::max() ) const
   {
     if ( _tick_share_sending == 0 ) {
       return 0.0;
     }
 
     if ( _packets_received == 0 ) {
+      
+      if ( _first_send_tick > last_sendable_tick ) {
+        return 0.0;
+      }
+      // printf("First send tick: %f\n", _first_send_tick);
+      // printf("Last sendable tick: %f\n", last_sendable_tick);
       return -INT_MAX;
     }
 

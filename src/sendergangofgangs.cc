@@ -59,6 +59,12 @@ double SenderGangofGangs<Gang1Type, Gang2Type>::utility( void ) const
 }
 
 template <class Gang1Type, class Gang2Type>
+double SenderGangofGangs<Gang1Type, Gang2Type>::utility( const double last_sendable_tick ) const
+{
+  return gang1_.utility( last_sendable_tick ) + gang2_.utility( last_sendable_tick );
+}
+
+template <class Gang1Type, class Gang2Type>
 vector< pair< double, double > > SenderGangofGangs<Gang1Type, Gang2Type>::throughputs_delays( void ) const
 {
   auto ret = gang1_.throughputs_delays();

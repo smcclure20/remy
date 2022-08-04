@@ -32,6 +32,7 @@ public:
   void tick( NextHop & next, Receiver & rec, const double & tickno );
 
   double utility( void ) const;
+  double utility( const double last_sendable_tick ) const;
 
   std::vector< std::pair< double, double > > throughputs_delays( void ) const;
   std::vector< SenderDataPoint > statistics_for_log( void ) const;

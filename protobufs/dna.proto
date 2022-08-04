@@ -53,7 +53,7 @@ message Memory {
   optional double slow_rec_rec_ewma = 24;
   optional double rtt_diff = 25;
   optional double queueing_delay = 26;
-  optional double since_last_loss = 27;
+  optional double recent_loss = 27;
 }
 
 message Whisker {

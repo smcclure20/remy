@@ -26,8 +26,15 @@ public:
       _pending_packet.accept( p, tickno );
     } else {
       if ( _limit and _buffer.size() < _limit ) {
+        // if ((int)_buffer.size() > 0){
+        //   printf("Adding packet to buffer (len: %d) (limit: %u)\n", (int) _buffer.size(), _limit);
+        // }
+        
         _buffer.push_back( p );
       }
+      // else {
+      //   printf("Pending packet nonempty and no buffer\n");
+      // }
     }
   }
 

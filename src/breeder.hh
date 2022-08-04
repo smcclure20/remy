@@ -51,7 +51,7 @@ class Breeder
 protected:
   BreederOptions _options;
 
-  void apply_best_split( T & tree, const unsigned int generation ) const;
+  void apply_best_split( T & tree, const unsigned int generation, int sample = 0 ) const;
 
 public:
   Breeder( const BreederOptions & s_options ) : _options( s_options ) {};

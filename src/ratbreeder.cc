@@ -16,7 +16,7 @@ Evaluator< WhiskerTree >::Outcome RatBreeder::improve( WhiskerTree & whiskers )
   unsigned int generation = 0;
 
   while ( generation < 5 ) {
-    const Evaluator< WhiskerTree > eval( _options.config_range, _whisker_options.sample_size ); // TODO: Make this a parameter - many of these magic numbers!
+    const Evaluator< WhiskerTree > eval( _options.config_range, _whisker_options.sample_size );
 
     printf("Finding most used whisker...\n");
     auto start = std::chrono::system_clock::now();
@@ -64,14 +64,15 @@ Evaluator< WhiskerTree >::Outcome RatBreeder::improve( WhiskerTree & whiskers )
 
   printf("Splitting most used whisker\n");
   /* Split most used whisker */
-  apply_best_split( whiskers, generation );
+  apply_best_split( whiskers, generation, _whisker_options.sample_size );
 
   /* carefully evaluate what we have vs. the previous best */
-  const Evaluator< WhiskerTree > eval2( _options.config_range, _whisker_options.sample_size * 10 );
+  printf("Performing careful eval to avoid regression...\n");
+  const Evaluator< WhiskerTree > eval2( _options.config_range, _whisker_options.sample_size * 10 ); //TODO: Make scores independent of number of configs (can only compare these for now)
   const auto new_score = eval2.score( whiskers, false, 10, true );
   const auto old_score = eval2.score( input_whiskertree, false, 10, true );
 
-  if ( old_score.score >= new_score.score ) {
+  if ( old_score.score > new_score.score ) {
     fprintf( stderr, "Regression, old=%f, new=%f\n", old_score.score, new_score.score );
     whiskers = input_whiskertree;
     return old_score;
@@ -84,5 +85,6 @@ vector< Whisker > WhiskerImprover::get_replacements( Whisker & whisker_to_improv
 {
   return whisker_to_improve.next_generation( _options.optimize_window_increment,
                                              _options.optimize_window_multiple,
-                                             _options.optimize_intersend );
+                                             _options.optimize_intersend,
+                                             _options.alternates_limit );
 }

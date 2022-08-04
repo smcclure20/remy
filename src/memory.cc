@@ -10,19 +10,21 @@ static const double alpha = 1.0 / 8.0;
 
 static const double slow_alpha = 1.0 / 256.0;
 
+static const double loss_memory = 20;
+
 void Memory::packets_received( const vector< Packet > & packets, const unsigned int flow_id,
   const int largest_ack )
 {
   int _largest_ack = largest_ack;
-  int loss_tick = 0;
 
   for ( const auto &x : packets ) {
     if ( x.flow_id != flow_id ) {
       continue;
     }
 
-    if (x.seq_num > largest_ack + 1 ){
-      loss_tick = x.tick_received;
+    if (x.seq_num > _largest_ack + 1 ) {
+      _losses.push( x.tick_received );
+      // printf("loss!\n");
     }
     _largest_ack = max( _largest_ack, x.seq_num );
 
@@ -43,7 +45,10 @@ void Memory::packets_received( const vector< Packet > & packets, const unsigned 
       _last_tick_sent = x.tick_sent;
       _last_tick_received = x.tick_received;
 
-      _since_last_loss = _last_tick_received - loss_tick;
+      _recent_loss = _losses.size();
+      while ( !_losses.empty() && _losses.front() < x.tick_received - loss_memory ) {
+        _losses.pop();
+      }
 
       _min_rtt = min( _min_rtt, rtt );
       _rtt_ratio = double( rtt ) / double( _min_rtt );
@@ -58,7 +63,7 @@ void Memory::packets_received( const vector< Packet > & packets, const unsigned 
 string Memory::str( void ) const
 {
   char tmp[ 256 ];
-  snprintf( tmp, 256, "sewma=%f, rewma=%f, rttr=%f, slowrewma=%f, rttd=%f, qdelay=%f, loss=%f", _rec_send_ewma, _rec_rec_ewma, _rtt_ratio, _slow_rec_rec_ewma, _rtt_diff, _queueing_delay, _since_last_loss );
+  snprintf( tmp, 256, "sewma=%f, rewma=%f, rttr=%f, slowrewma=%f, rttd=%f, qdelay=%f, loss=%f", _rec_send_ewma, _rec_rec_ewma, _rtt_ratio, _slow_rec_rec_ewma, _rtt_diff, _queueing_delay, _recent_loss );
   return tmp;
 }
 
@@ -85,7 +90,7 @@ string Memory::str( unsigned int num ) const
       snprintf( tmp, 50, "qdelay=%f ", _queueing_delay );
       break;
     case 6:
-      snprintf( tmp, 50, "loss=%f ", _since_last_loss );
+      snprintf( tmp, 50, "loss=%f ", _recent_loss );
       break;
   }
   return tmp;
@@ -106,7 +111,7 @@ RemyBuffers::Memory Memory::DNA( void ) const
   ret.set_slow_rec_rec_ewma( _slow_rec_rec_ewma );
   ret.set_rtt_diff( _rtt_diff );
   ret.set_queueing_delay( _queueing_delay );
-  ret.set_since_last_loss( _since_last_loss );
+  ret.set_recent_loss( _recent_loss );
   return ret;
 }
 
@@ -121,10 +126,11 @@ Memory::Memory( const bool is_lower_limit, const RemyBuffers::Memory & dna )
     _slow_rec_rec_ewma( get_val_or_default( dna, slow_rec_rec_ewma, is_lower_limit ) ),
     _rtt_diff( get_val_or_default( dna, rtt_diff, is_lower_limit ) ),
     _queueing_delay( get_val_or_default( dna, queueing_delay, is_lower_limit ) ),
-    _since_last_loss( get_val_or_default( dna, since_last_loss, is_lower_limit ) ),
+    _recent_loss( get_val_or_default( dna, recent_loss, is_lower_limit ) ),
     _last_tick_sent( 0 ),
     _last_tick_received( 0 ),
-    _min_rtt( 0 )
+    _min_rtt( 0 ),
+    _losses( )
 {
 }
 
@@ -137,7 +143,7 @@ size_t hash_value( const Memory & mem )
   boost::hash_combine( seed, mem._slow_rec_rec_ewma );
   boost::hash_combine( seed, mem._rtt_diff );
   boost::hash_combine( seed, mem._queueing_delay );
-  boost::hash_combine( seed, mem._since_last_loss );
+  boost::hash_combine( seed, mem._recent_loss );
 
   return seed;
 }
