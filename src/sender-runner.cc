@@ -6,6 +6,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <iostream>
+#include <fstream>
 
 #include "evaluator.hh"
 #include "configrange.hh"
@@ -25,20 +27,28 @@ void print_tree(T & tree)
 }
 
 template <typename T>
-void parse_outcome( T & outcome ) 
+void parse_outcome( T & outcome, string output_file ) 
 {
+  ofstream of;
+  of.open(output_file);
+
   printf( "score = %f\n", outcome.score );
+  of << "score=" << outcome.score << endl;
   double norm_score = 0;
 
   for ( auto &run : outcome.throughputs_delays ) {
     printf( "===\nconfig: %s\n", run.first.str().c_str() );
+    of << "===\nconfig: " << run.first.str().c_str() << endl;
     for ( auto &x : run.second ) {
+      of << "sender: tp=" << x.first / run.first.link_ppt << ", del=" << x.second / run.first.delay << endl;
       printf( "sender: [tp=%f, del=%f]\n", x.first / run.first.link_ppt, x.second / run.first.delay );
       norm_score += log2( x.first / run.first.link_ppt ) - log2( x.second / run.first.delay );
     }
   }
 
   printf( "normalized_score = %f\n", norm_score );
+  of << "normalized_score=" << norm_score << endl;
+  of.close();
 
   printf( "Rules: %s\n", outcome.used_actions.str().c_str() );
 }
@@ -56,6 +66,11 @@ int main( int argc, char *argv[] )
   double buffer_size = numeric_limits<unsigned int>::max();
   double stochastic_loss_rate = 0;
   unsigned int simulation_ticks = 100000;
+  bool is_range = false;
+  RemyBuffers::ConfigRange input_config;
+  string config_filename;
+  string output_filename;
+  int default_sample_num = 100;
 
   for ( int i = 1; i < argc && !is_poisson; i++ ) {
     string arg( argv[ i ] );
@@ -93,10 +108,29 @@ int main( int argc, char *argv[] )
         }
         whiskers = WhiskerTree( tree );  
         print_tree< RemyBuffers::WhiskerTree >(tree);
-        printf("Number of rules in the tree: %d\n", WhiskerTree(tree).total_whiskers());
+        printf("Number of rules in the tree: %d\n", whiskers.total_whiskers());
       }
 
       if ( close( fd ) < 0 ) {
+        perror( "close" );
+        exit( 1 );
+      }
+    } else if ( arg.substr( 0, 3 ) == "of=" ) {
+      output_filename = string( arg.substr( 3 ) );
+
+    } else if ( arg.substr( 0, 4 ) == "cfg=" ) {
+      is_range = true;
+      config_filename = string( arg.substr( 4 ) );
+      int cfd = open( config_filename.c_str(), O_RDONLY );
+      if ( cfd < 0 ) {
+        perror( "open config file error");
+        exit( 1 );
+      }
+      if ( !input_config.ParseFromFileDescriptor( cfd ) ) {
+        fprintf( stderr, "Could not parse input config from file %s. \n", config_filename.c_str() );
+        exit ( 1 );
+      }
+      if ( close( cfd ) < 0 ) {
         perror( "close" );
         exit( 1 );
       }
@@ -128,23 +162,30 @@ int main( int argc, char *argv[] )
   }
 
   ConfigRange configuration_range;
-  configuration_range.link_ppt = Range( link_ppt,link_ppt, 0 ); /* 1 Mbps to 10 Mbps */
-  configuration_range.rtt = Range( delay, delay, 0 ); /* ms */
-  configuration_range.num_senders = Range( num_senders, num_senders, 0 );
-  configuration_range.mean_on_duration = Range( mean_on_duration, mean_on_duration, 0 );
-  configuration_range.mean_off_duration = Range( mean_off_duration, mean_off_duration, 0 );
-  configuration_range.buffer_size = Range( buffer_size, buffer_size, 0 );
-  configuration_range.stochastic_loss_rate = Range( stochastic_loss_rate, stochastic_loss_rate, 0);
-  configuration_range.simulation_ticks = simulation_ticks;
+  int sample_num = 0;
+  if ( !is_range ) {
+    configuration_range.link_ppt = Range( link_ppt, link_ppt, 0 ); /* 1 Mbps to 10 Mbps */
+    configuration_range.rtt = Range( delay, delay, 0 ); /* ms */
+    configuration_range.num_senders = Range( num_senders, num_senders, 0 );
+    configuration_range.mean_on_duration = Range( mean_on_duration, mean_on_duration, 0 );
+    configuration_range.mean_off_duration = Range( mean_off_duration, mean_off_duration, 0 );
+    configuration_range.buffer_size = Range( buffer_size, buffer_size, 0 );
+    configuration_range.stochastic_loss_rate = Range( stochastic_loss_rate, stochastic_loss_rate, 0);
+    configuration_range.simulation_ticks = simulation_ticks;
+  }
+  else {
+    configuration_range = ConfigRange( input_config );
+    sample_num = default_sample_num;
+  }
 
   if ( is_poisson ) {
     Evaluator< FinTree > eval( configuration_range );
     auto outcome = eval.score( fins, false, 10 );
-    parse_outcome< Evaluator< FinTree >::Outcome > ( outcome );
+    parse_outcome< Evaluator< FinTree >::Outcome > ( outcome, output_filename );
   } else {
-    Evaluator< WhiskerTree > eval( configuration_range );
-    auto outcome = eval.score( whiskers, false, 10 );
-    parse_outcome< Evaluator< WhiskerTree >::Outcome > ( outcome );
+    Evaluator< WhiskerTree > eval( configuration_range, sample_num );
+    auto outcome = eval.score( whiskers, false, 10, sample_num > 0 );
+    parse_outcome< Evaluator< WhiskerTree >::Outcome > ( outcome, output_filename );
   }
 
   return 0;

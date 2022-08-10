@@ -2,7 +2,7 @@ AM_CPPFLAGS = $(CXX11_FLAGS) -I../protobufs
 AM_CXXFLAGS = $(PICKY_CXXFLAGS)
 LDADD = ../protobufs/libremyprotos.a -lm $(protobuf_LIBS)
 
-bin_PROGRAMS = remy remy-poisson sender-runner sender-logger scoring-example configuration inspect-config inspect-simulationsdata
+bin_PROGRAMS = remy remy-poisson sender-runner sender-logger scoring-example configuration inspect-config inspect-simulationsdata inspect-sim-whiskers
 
 common_source = delay.hh evaluator.cc evaluator.hh                 \
 	exponential.hh link.hh link-templates.cc stochastic-loss.hh                      \
@@ -38,4 +38,6 @@ configuration_SOURCES = input-configrange.cc
 inspect_config_SOURCES = inspect-configrange.cc
 
 inspect_simulationsdata_SOURCES = inspect-simulationsdata.cc
+
+inspect_sim_whiskers_SOURCES = $(common_source) inspect-sim-whiskers.cc
 

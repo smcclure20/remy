@@ -67,7 +67,7 @@ public:
   std::string str( void ) const
   {
     char tmp[ 256 ];
-    snprintf( tmp, 256, "mean_on=%f, mean_off=%f, nsrc=%f, link_ppt=%f, delay=%f, buffer_size=%f, stochastic_loss_rate = %f\n",
+    snprintf( tmp, 256, "mean_on=%f, mean_off=%f, nsrc=%f, link_ppt=%f, delay=%f, buffer_size=%f, stochastic_loss_rate=%f\n",
 	     mean_on_duration, mean_off_duration, num_senders, link_ppt, delay, buffer_size, stochastic_loss_rate );
     return tmp;
   }
