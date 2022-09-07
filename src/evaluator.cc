@@ -13,8 +13,37 @@ template <typename T>
 Evaluator< T >::Evaluator( const ConfigRange & range, const int sample )
   : _prng_seed( global_PRNG()() ), /* freeze the PRNG seed for the life of this Evaluator */
     _tick_count( range.simulation_ticks ),
-    _configs(),
-    _sampled_configs()
+    _configs()
+{
+  if (sample == 0) {
+    _generate_configs(range);
+  }
+  else {
+    _sample_configs(range, sample);
+  }
+}
+
+template <typename T>
+ProblemBuffers::Problem Evaluator< T >::_ProblemSettings_DNA( void ) const
+{
+  ProblemBuffers::Problem ret;
+
+  ProblemBuffers::ProblemSettings settings;
+  settings.set_prng_seed( _prng_seed );
+  settings.set_tick_count( _tick_count );
+
+  ret.mutable_settings()->CopyFrom( settings );
+
+  for ( auto &x : _configs ) {
+    RemyBuffers::NetConfig *config = ret.add_configs();
+    *config = x.DNA();
+  }
+
+  return ret;
+}
+
+template <typename T>
+void Evaluator< T >::_generate_configs( const ConfigRange & range )
 {
   // add configs from every point in the cube of configs
   for (double link_ppt = range.link_ppt.low; link_ppt <= range.link_ppt.high; link_ppt += range.link_ppt.incr) {
@@ -39,42 +68,22 @@ Evaluator< T >::Evaluator( const ConfigRange & range, const int sample )
     }
     if ( range.link_ppt.isOne() ) { break; }
   }
-
-  _sample_configs(sample);
 }
 
 template <typename T>
-ProblemBuffers::Problem Evaluator< T >::_ProblemSettings_DNA( void ) const
+void Evaluator< T >::_sample_configs(const ConfigRange & range, const int num)
 {
-  ProblemBuffers::Problem ret;
-
-  ProblemBuffers::ProblemSettings settings;
-  settings.set_prng_seed( _prng_seed );
-  settings.set_tick_count( _tick_count );
-
-  ret.mutable_settings()->CopyFrom( settings );
-
-  for ( auto &x : _configs ) {
-    RemyBuffers::NetConfig *config = ret.add_configs();
-    *config = x.DNA();
-  }
-
-  return ret;
-}
-
-template <typename T>
-void Evaluator< T >::_sample_configs(const int num)
-{
-  if (num == 0)
-  {
-    return;
-  }
   PRNG sample_prng( _prng_seed ); // Is it an issue that we are using the same seed that we do for the simulations themselves?
-  shuffle(_configs.begin(), _configs.end(), sample_prng);
-  std::vector<NetConfig>::const_iterator first = _configs.begin();
-  std::vector<NetConfig>::const_iterator last = _configs.begin() + num;
-  std::vector<NetConfig> sample(first, last);
-  _sampled_configs = sample;
+  for (int i = 0; i < num; i++ ) {
+    double link_ppt =  _sample_range(range.link_ppt.low, range.link_ppt.high, range.link_ppt.incr);
+    double rtt =  _sample_range(range.rtt.low, range.rtt.high, range.rtt.incr);
+    int senders =  (int)_sample_range(range.num_senders.low, range.num_senders.high, range.num_senders.incr);
+    double on =  _sample_range(range.mean_on_duration.low, range.mean_on_duration.high, range.mean_on_duration.incr);
+    double off =  _sample_range(range.mean_off_duration.low, range.mean_off_duration.high, range.mean_off_duration.incr);
+    double loss =  _sample_range(range.stochastic_loss_rate.low, range.stochastic_loss_rate.high, range.stochastic_loss_rate.incr);
+    double buffer =  _sample_range(range.buffer_size.low, range.buffer_size.high, range.buffer_size.incr);
+    _configs.push_back( NetConfig().set_link_ppt( link_ppt ).set_delay( rtt ).set_num_senders( senders ).set_on_duration( on ).set_off_duration(off).set_buffer_size( buffer ).set_stochastic_loss_rate( loss ) );
+  }
 }
 
 template <>
@@ -218,14 +227,9 @@ Evaluator< T >::Outcome::Outcome( const AnswerBuffers::Outcome & dna )
 
 template <typename T>
 typename Evaluator< T >::Outcome Evaluator< T >::score( T & run_actions,
-				     const bool trace, const double carefulness, const bool sample ) const
+				     const bool trace, const double carefulness) const
 {
-  if (!sample)
-  {
-    return score( run_actions, _prng_seed, _configs, trace, _tick_count * carefulness );
-  }
-
-  return score( run_actions, _prng_seed, _sampled_configs, trace, _tick_count * carefulness );
+  return score( run_actions, _prng_seed, _configs, trace, _tick_count * carefulness );
 }
 
 template class Evaluator< WhiskerTree>;

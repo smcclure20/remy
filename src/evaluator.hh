@@ -35,11 +35,13 @@ private:
   unsigned int _tick_count;
 
   std::vector< NetConfig > _configs;
-  std::vector< NetConfig > _sampled_configs;
 
   ProblemBuffers::Problem _ProblemSettings_DNA ( void ) const;
 
-  void _sample_configs(const int num);
+  void _generate_configs( const ConfigRange & range );
+  void _sample_configs(const ConfigRange & range, const int num);
+
+  double _sample_range(double min, double max, double incr) { int index = rand() % (int)(floor((max - min) / incr) + 1); return min + (incr * index); };
 
 public:
   Evaluator( const ConfigRange & range, const int sample = 0 );
@@ -48,8 +50,7 @@ public:
 
   Outcome score( T & run_actions,
 		const bool trace = false,
-		const double carefulness = 1,
-    const bool sample = false) const;
+		const double carefulness = 1) const;
 
   static Evaluator::Outcome parse_problem_and_evaluate( const ProblemBuffers::Problem & problem );
 
@@ -59,9 +60,9 @@ public:
 			const bool trace,
 			const unsigned int ticks_to_run );
 
-  int num_configs(void) const { if (_sampled_configs.empty()) { return _configs.size(); } else { return _sampled_configs.size(); } };
+  int num_configs(void) const { return _configs.size(); };
 
-  std::vector< NetConfig > get_configs (const bool sampled) const {if (sampled) { return _sampled_configs; } else { return _configs; } }; // TODO: how to make sure these are immutable
+  std::vector< NetConfig > get_configs ( void ) const { return _configs; }; // TODO: how to make sure these are immutable
 };
 
 #endif

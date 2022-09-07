@@ -20,7 +20,7 @@ Evaluator< WhiskerTree >::Outcome RatBreeder::improve( WhiskerTree & whiskers )
 
     printf("Finding most used whisker...\n");
     auto start = std::chrono::system_clock::now();
-    auto outcome( eval.score( whiskers, false, 1, true ) );
+    auto outcome( eval.score( whiskers, false, 1 ) );
     auto end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end-start;
     std::cout << "elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
@@ -37,7 +37,7 @@ Evaluator< WhiskerTree >::Outcome RatBreeder::improve( WhiskerTree & whiskers )
       continue;
     }
 
-    WhiskerImprover improver( eval, whiskers, _whisker_options, outcome.score, true );
+    WhiskerImprover improver( eval, whiskers, _whisker_options, outcome.score );
 
     Whisker whisker_to_improve = *most_used_whisker_ptr;
 
@@ -69,8 +69,8 @@ Evaluator< WhiskerTree >::Outcome RatBreeder::improve( WhiskerTree & whiskers )
   /* carefully evaluate what we have vs. the previous best */
   printf("Performing careful eval to avoid regression...\n");
   const Evaluator< WhiskerTree > eval2( _options.config_range, _whisker_options.sample_size * 10 ); //TODO: Make scores independent of number of configs (can only compare these for now)
-  const auto new_score = eval2.score( whiskers, false, 10, true );
-  const auto old_score = eval2.score( input_whiskertree, false, 10, true );
+  const auto new_score = eval2.score( whiskers, false, 10);
+  const auto old_score = eval2.score( input_whiskertree, false, 10);
 
   if ( old_score.score > new_score.score ) {
     fprintf( stderr, "Regression, old=%f, new=%f\n", old_score.score, new_score.score );

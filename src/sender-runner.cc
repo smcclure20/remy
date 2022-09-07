@@ -184,7 +184,7 @@ int main( int argc, char *argv[] )
     parse_outcome< Evaluator< FinTree >::Outcome > ( outcome, output_filename );
   } else {
     Evaluator< WhiskerTree > eval( configuration_range, sample_num );
-    auto outcome = eval.score( whiskers, false, 10, sample_num > 0 );
+    auto outcome = eval.score( whiskers, false, 10);
     parse_outcome< Evaluator< WhiskerTree >::Outcome > ( outcome, output_filename );
   }
 

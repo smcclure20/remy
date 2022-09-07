@@ -16,7 +16,7 @@ template <typename T>
 void Breeder< T >::apply_best_split( T & tree, const unsigned int generation, int sample ) const
 {
   const Evaluator< T > eval( _options.config_range, sample );
-  auto outcome( eval.score( tree, true, 1, true ) );
+  auto outcome( eval.score( tree, true, 1 ) );
 
   while ( 1 ) {
     auto my_action( outcome.used_actions.most_used( generation ) );
@@ -41,10 +41,8 @@ void Breeder< T >::apply_best_split( T & tree, const unsigned int generation, in
 template <typename T, typename A>
 ActionImprover< T, A >::ActionImprover( const Evaluator< T > & s_evaluator,
 				  const T & tree,
-				  const double score_to_beat,
-          const bool sample)
+				  const double score_to_beat)
   : eval_( s_evaluator ),
-    sample_(sample),
     tree_( tree ),
     score_to_beat_( score_to_beat )
 {}
@@ -63,13 +61,12 @@ void ActionImprover< T, A >::evaluate_replacements(const vector<A> &replacements
                            async( launch::async, [] ( const Evaluator< T > & e,
                                                       const A & r,
                                                       const T & tree,
-                                                      const double carefulness,
-                                                      const bool sample ) {
+                                                      const double carefulness ) {
                                     T replaced_tree( tree );
                                     const bool found_replacement __attribute((unused)) = replaced_tree.replace( r );
                                     assert( found_replacement );
-                                    return make_pair( true, e.score( replaced_tree, false, carefulness, sample ).score ); },
-                                  eval_, test_replacement, tree_, carefulness, sample_ ) );
+                                    return make_pair( true, e.score( replaced_tree, false, carefulness ).score ); },
+                                  eval_, test_replacement, tree_, carefulness) );
     } else {
       /* we already know the score */
       scores.emplace_back( test_replacement,

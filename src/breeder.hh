@@ -20,7 +20,6 @@ class ActionImprover
 protected:
   const double MAX_PERCENT_ERROR = 0.05;
   const Evaluator< T > eval_;
-  const bool sample_;
 
   T tree_;
 
@@ -39,7 +38,7 @@ protected:
 
 public:
   ActionImprover( const Evaluator<  T > & evaluator, const T & tree, 
-                   const double score_to_beat, const bool sample);
+                   const double score_to_beat );
   virtual ~ActionImprover() {};
 
   double improve( A & action_to_improve );
