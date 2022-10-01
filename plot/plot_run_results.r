@@ -19,11 +19,21 @@ colnames(agg_del_df) <- c("Config", "Avg.Delay", "Delay.SD")
 
 all_summary <- merge(x=agg_tput_df, y=agg_del_df, by="Config", all=TRUE)
 
+
 # Get configuration information
 cfg_data <- read.csv(args[2])
 
 # Plot
 pdf(args[3])
+
+# Print summary stats
+tput_mean <- mean(all_summary$Avg.Tput)
+tput_sd <- sd(all_summary$Avg.Tput)
+del_mean <- mean(all_summary$Avg.Delay)
+del_sd <- sd(all_summary$Avg.Delay)
+
+plot.new()
+legend("topleft", legend=c(paste("Throughput mean:", tput_mean), paste("Throughput std dev:", tput_sd), paste("Delay mean:", del_mean), paste("Delay std dev:", del_sd)))
 
 # Plot averages
 plot(all_summary$Avg.Tput, all_summary$Avg.Delay, main="RemyCC Average Throughput and Delay", xlab="Average Throughput", ylab="Average Delay", type="p")
@@ -43,6 +53,7 @@ arrows(x0=all_summary$Avg.Tput,
        x1=all_summary$Avg.Tput, 
        y1=all_summary$Avg.Delay+all_summary$Delay.SD,
        code=3, angle=90, length=0.05, col="gray")
+text(all_summary$Avg.Tput, all_summary$Avg.Delay+0.01, labels=all_summary$Config, cex=0.5)
 
 # Plot with color for a network configuration feature
 rbPal <- colorRampPalette(c('red','blue'))
