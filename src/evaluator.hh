@@ -66,8 +66,7 @@ public:
       const bool trace,
       const unsigned int ticks_to_run );
 
-  Outcome score_parallel( T & run_actions, 
-      const NetConfig & config,
+  Outcome score_parallel( T & run_actions,
       const bool trace = false, 
       const double carefulness = 1) const; 
 

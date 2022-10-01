@@ -277,10 +277,31 @@ Evaluator< WhiskerTree >::Outcome Evaluator< WhiskerTree >::score_config( Whiske
 }
 
 template <typename T>
-typename Evaluator< T >::Outcome Evaluator< T >::score_parallel( T & run_actions, const NetConfig & config,
-				     const bool trace, const double carefulness) const
+typename Evaluator< T >::Outcome Evaluator< T >::score_parallel( T & run_actions,
+				     const bool trace, const double carefulness) const 
 {
-  return score_config(run_actions, _prng_seed, config, trace, _tick_count * carefulness);
+  std::vector< future < typename Evaluator< T >::Outcome > > outcomes;
+
+  printf("Evaluating on %d networks...\n", (int)configs.size());
+  for ( const auto & config : configs ) {
+    outcomes.emplace_back(async(launch::async, [] ( const Evaluator< T > & e,
+                                                    const T & run_actions,
+                                                    const NetConfig & configs,
+                                                    const bool trace,
+                                                    const double carefulness) { 
+                                          T tree( run_actions );
+                                          return e.score_config(tree, prng_seed, configs, trace, ticks_to_run); },
+                                          this, tree, configs, trace, carefulness ));
+  }                 
+
+  typename Evaluator< T >::Outcome total_outcome;
+  for (auto & outcome_future : outcomes ){
+      outcome_future.wait();
+      auto outcome = outcome_future.get();
+      total_outcome.score += outcome.score;
+  }
+
+  return total_outcome;
 }
 
 template <typename T>
