@@ -225,6 +225,64 @@ Evaluator< T >::Outcome::Outcome( const AnswerBuffers::Outcome & dna )
   }
 }
 
+template <>
+Evaluator< FinTree >::Outcome Evaluator< FinTree >::score_config( FinTree & run_fins,
+             const unsigned int prng_seed,
+             const NetConfig & config,
+             const bool trace,
+             const unsigned int ticks_to_run )
+{
+  PRNG run_prng( prng_seed );
+  unsigned int fish_prng_seed( run_prng() );
+
+  /* run tests */
+  Evaluator::Outcome the_outcome;
+
+  Network<SenderGang<Fish, TimeSwitchedSender<Fish>>,
+      SenderGang<Fish, TimeSwitchedSender<Fish>>> network1( Fish( run_fins, fish_prng_seed, trace ), run_prng, config );
+  network1.run_simulation( ticks_to_run );
+
+  the_outcome.score = network1.senders().utility();
+  the_outcome.throughputs_delays.emplace_back( config, network1.senders().throughputs_delays() );
+
+
+  the_outcome.used_actions = run_fins;
+
+  return the_outcome;
+}
+
+template <>
+Evaluator< WhiskerTree >::Outcome Evaluator< WhiskerTree >::score_config( WhiskerTree & run_whiskers,
+             const unsigned int prng_seed,
+             const NetConfig & config,
+             const bool trace,
+             const unsigned int ticks_to_run )
+{
+  PRNG run_prng( prng_seed );
+
+  /* run tests */
+  Evaluator::Outcome the_outcome;
+
+  Network<SenderGang<Rat, TimeSwitchedSender<Rat>>, 
+  SenderGang<Rat, TimeSwitchedSender<Rat>>> network1( Rat( run_whiskers, trace ), run_prng, config );
+  network1.run_simulation( ticks_to_run );
+
+  the_outcome.score = network1.senders().utility();
+  the_outcome.throughputs_delays.emplace_back( config, network1.senders().throughputs_delays() );
+
+
+  the_outcome.used_actions = run_whiskers;
+
+  return the_outcome;
+}
+
+template <typename T>
+typename Evaluator< T >::Outcome Evaluator< T >::score_parallel( T & run_actions, const NetConfig & config,
+				     const bool trace, const double carefulness) const
+{
+  return score_config(run_actions, _prng_seed, config, trace, _tick_count * carefulness);
+}
+
 template <typename T>
 typename Evaluator< T >::Outcome Evaluator< T >::score( T & run_actions,
 				     const bool trace, const double carefulness) const

@@ -60,6 +60,17 @@ public:
 			const bool trace,
 			const unsigned int ticks_to_run );
 
+  static Outcome score_config( T & run_actions,
+      const unsigned int prng_seed,
+      const NetConfig & config,
+      const bool trace,
+      const unsigned int ticks_to_run );
+
+  Outcome score_parallel( T & run_actions, 
+      const NetConfig & config,
+      const bool trace = false, 
+      const double carefulness = 1) const; 
+
   int num_configs(void) const { return _configs.size(); };
 
   std::vector< NetConfig > get_configs ( void ) const { return _configs; }; // TODO: how to make sure these are immutable

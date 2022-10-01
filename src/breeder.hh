@@ -56,6 +56,8 @@ public:
   Breeder( const BreederOptions & s_options ) : _options( s_options ) {};
   virtual ~Breeder() {};
 
+  typename Evaluator< T >::Outcome eval_parallel( T & tree, bool sample );
+
   virtual typename Evaluator< T >::Outcome improve( T & whiskers ) = 0;
 };
 

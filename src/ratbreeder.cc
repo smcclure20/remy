@@ -69,8 +69,8 @@ Evaluator< WhiskerTree >::Outcome RatBreeder::improve( WhiskerTree & whiskers )
   /* carefully evaluate what we have vs. the previous best */
   printf("Performing careful eval to avoid regression...\n");
   const Evaluator< WhiskerTree > eval2( _options.config_range, _whisker_options.sample_size * 10 ); //TODO: Make scores independent of number of configs (can only compare these for now)
-  const auto new_score = eval2.score( whiskers, false, 10);
-  const auto old_score = eval2.score( input_whiskertree, false, 10);
+  const auto new_score = eval2.score_parallel( whiskers, false, 10);
+  const auto old_score = eval2.score_parallel( input_whiskertree, false, 10);
 
   if ( old_score.score > new_score.score ) {
     fprintf( stderr, "Regression, old=%f, new=%f\n", old_score.score, new_score.score );
