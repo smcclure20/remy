@@ -1,5 +1,6 @@
 #include <fcntl.h>
 #include <algorithm>
+#include <future>
 
 #include "configrange.hh"
 #include "evaluator.hh"
@@ -282,16 +283,16 @@ typename Evaluator< T >::Outcome Evaluator< T >::score_parallel( T & run_actions
 {
   std::vector< future < typename Evaluator< T >::Outcome > > outcomes;
 
-  printf("Evaluating on %d networks...\n", (int)configs.size());
-  for ( const auto & config : configs ) {
-    outcomes.emplace_back(async(launch::async, [] ( const Evaluator< T > & e,
-                                                    const T & run_actions,
-                                                    const NetConfig & configs,
+  printf("Evaluating on %d networks...\n", (int)_configs.size());
+  for ( const auto & config : _configs ) {
+    outcomes.emplace_back(async(launch::async, [] ( const T & run_actions,
+                                                    const unsigned int prng_seed,
+                                                    const NetConfig & config,
                                                     const bool trace,
                                                     const double carefulness) { 
                                           T tree( run_actions );
-                                          return e.score_config(tree, prng_seed, configs, trace, ticks_to_run); },
-                                          this, tree, configs, trace, carefulness ));
+                                          return score_config(tree, prng_seed, config, trace, carefulness); },
+                                          run_actions, _prng_seed, config, trace, carefulness ));
   }                 
 
   typename Evaluator< T >::Outcome total_outcome;
