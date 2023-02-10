@@ -18,6 +18,7 @@ Evaluator< WhiskerTree >::Outcome RatBreeder::improve( WhiskerTree & whiskers )
   while ( generation < 5 ) {
     const Evaluator< WhiskerTree > eval( _options.config_range, _whisker_options.sample_size );
 
+    printf("Generation: %d, whiskers in generation: %d\n", generation, whiskers.count_whiskers_in_gen(generation));
     printf("Finding most used whisker...\n");
     auto start = std::chrono::system_clock::now();
     auto outcome( eval.score( whiskers, false, 1 ) );

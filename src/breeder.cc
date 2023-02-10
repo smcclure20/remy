@@ -132,7 +132,7 @@ double ActionImprover< T, A >::improve( A & action_to_improve )
 
   /* Run for 10% simulation time to get estimates for the final score 
      and discard bad performing ones early on. */
-  vector<A> top_replacements = early_bail_out( replacements, 0.5, 0.5 );
+  vector<A> top_replacements = early_bail_out( replacements, 0.3, 0.5 );
 
   /* find best replacement */
   evaluate_replacements( top_replacements, scores, 1);

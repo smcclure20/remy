@@ -50,7 +50,7 @@ void parse_outcome( T & outcome, string output_file )
   of << "normalized_score=" << norm_score << endl;
   of.close();
 
-  printf( "Rules: %s\n", outcome.used_actions.str().c_str() );
+  // printf( "Rules: %s\n", outcome.used_actions.str().c_str() );
 }
 
 int main( int argc, char *argv[] )
@@ -65,7 +65,7 @@ int main( int argc, char *argv[] )
   double mean_off_duration = 500.0;
   double buffer_size = numeric_limits<unsigned int>::max();
   double stochastic_loss_rate = 0;
-  unsigned int simulation_ticks = 100000;
+  unsigned int simulation_ticks = 10000;
   bool is_range = false;
   RemyBuffers::ConfigRange input_config;
   string config_filename;

@@ -32,6 +32,7 @@ public:
   bool replace( const Whisker & w );
   bool replace( const Whisker & src, const WhiskerTree & dst );
   const Whisker * most_used( const unsigned int max_generation ) const;
+  int count_whiskers_in_gen ( const unsigned int max_generation ) const;
 
   void add_tree_counts( const WhiskerTree & tree);
 

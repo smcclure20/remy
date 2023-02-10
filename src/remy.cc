@@ -51,6 +51,7 @@ int main( int argc, char *argv[] )
   for ( int i = 1; i < argc; i++ ) {
     string arg( argv[ i ] );
     if ( arg.substr( 0, 3 ) == "if=" ) {
+      std::cout << "Input from file" << std::endl;
       string filename( arg.substr( 3 ) );
       int fd = open( filename.c_str(), O_RDONLY );
       if ( fd < 0 ) {
@@ -162,6 +163,7 @@ int main( int argc, char *argv[] )
   }
 
   printf( "Initial rules (use if=FILENAME to read from disk): %s\n", whiskers.str().c_str() );
+  printf( "Total rules: %u\n", whiskers.total_whiskers());
   printf( "#######################\n" );
 
   if ( !output_filename.empty() ) {

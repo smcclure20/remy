@@ -129,6 +129,26 @@ const Whisker * WhiskerTree::most_used( const unsigned int max_generation ) cons
   return ret;
 }
 
+int WhiskerTree::count_whiskers_in_gen ( const unsigned int max_generation ) const
+{
+  if ( is_leaf() ) {
+    assert( _leaf.size() == 1 );
+    if ( _leaf.front().generation() <= max_generation )
+    {
+      return 1;
+    }
+
+    return 0;
+  }
+
+  int total = 0;
+  for ( const auto &x : _children ) {
+    total += x.count_whiskers_in_gen( max_generation );
+  }
+
+  return total;
+}
+
 void WhiskerTree::add_tree_counts( const WhiskerTree & tree) // Assumes trees are copies of on another with different usages (TODO: ADD ASSERTS)
 {
   if ( is_leaf() ) { // TODO: NEED TO UNDERSTAND _LEAF

@@ -122,7 +122,13 @@ Evaluator< WhiskerTree >::Outcome Evaluator< WhiskerTree >::score( WhiskerTree &
     /* run once */
     Network<SenderGang<Rat, TimeSwitchedSender<Rat>>,
       SenderGang<Rat, TimeSwitchedSender<Rat>>> network1( Rat( run_whiskers, trace ), run_prng, x );
+    
+    // auto start = std::chrono::system_clock::now();
     network1.run_simulation( ticks_to_run );
+    // auto end = std::chrono::system_clock::now();
+    // std::chrono::duration<double> elapsed_seconds = end-start;
+    // std::cout << "config elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
+    // printf("Netconfig: %s", x.str().c_str());
     
     the_outcome.score += network1.senders().utility( (double) (ticks_to_run - x.delay) );
     // the_outcome.score += network1.senders().utility( );
