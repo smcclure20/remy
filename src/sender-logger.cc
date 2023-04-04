@@ -164,7 +164,7 @@ int main( int argc, char *argv[] )
     serialize_to_file( results, datafilename );
   } else {
     SimulationResults<WhiskerTree> results;
-    Rat example_sender = Rat( whiskers, true );
+    Rat example_sender = Rat( whiskers, true);
     results = run_simulation_for_results<Rat, WhiskerTree>( whiskers, config, example_sender, simulation_ticks, sender1_on_ticks, log_interval_ticks );
     serialize_to_file( results, datafilename );
   }

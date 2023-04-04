@@ -26,7 +26,7 @@ protected:
 
   void accumulate_sending_time_until( const double & tickno, const unsigned int num_sending );
 
-  void receive_feedback( Receiver & rec );
+  void receive_feedback( Receiver & rec, const double & tickno );
 
 public:
   void switch_on( const double & tickno );

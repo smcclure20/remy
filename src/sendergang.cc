@@ -164,7 +164,7 @@ void SwitchedSender<SenderType>::accumulate_sending_time_until( const double & t
 }
 
 template <class SenderType>
-void SwitchedSender<SenderType>::receive_feedback( Receiver & rec )
+void SwitchedSender<SenderType>::receive_feedback( Receiver & rec, const double & tickno __attribute((unused)))
 {
   if ( rec.readable( id ) ) {
     const std::vector< Packet > & packets = rec.packets_for( id );
@@ -184,7 +184,7 @@ void TimeSwitchedSender<SenderType>::tick( NextHop & next, Receiver & rec,
 					   PRNG & prng __attribute((unused)),
 					   Exponential & start_distribution __attribute((unused)) )
 {
-  SwitchedSender<SenderType>::receive_feedback( rec );
+  SwitchedSender<SenderType>::receive_feedback( rec, tickno );
 
   /* possibly send packets */
   if ( SwitchedSender<SenderType>::sending ) {
@@ -201,7 +201,7 @@ void ExternalSwitchedSender<SenderType>::tick( NextHop & next, Receiver & rec,
 					       PRNG & prng __attribute((unused)),
 					       Exponential & start_distribution __attribute((unused)) )
 {
-  SwitchedSender<SenderType>::receive_feedback( rec );
+  SwitchedSender<SenderType>::receive_feedback( rec, tickno );
 
   /* possibly send packets */
   if ( SwitchedSender<SenderType>::sending ) {
@@ -218,7 +218,7 @@ void ByteSwitchedSender<SenderType>::tick( NextHop & next, Receiver & rec,
 					   PRNG & prng,
 					   Exponential & start_distribution )
 {
-  SwitchedSender<SenderType>::receive_feedback( rec );
+  SwitchedSender<SenderType>::receive_feedback( rec, tickno );
 
   /* possibly send packets */
   if ( SwitchedSender<SenderType>::sending ) {

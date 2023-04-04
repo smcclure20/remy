@@ -8,7 +8,7 @@ struct WhiskerImproverOptions
   bool optimize_window_increment = true;
   bool optimize_window_multiple = true;
   bool optimize_intersend = true;
-  int alternates_limit = 216;
+  int alternates_limit = 343;
   int sample_size = 50;
 };
 

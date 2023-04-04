@@ -40,7 +40,7 @@ void parse_outcome( T & outcome, string output_file )
     printf( "===\nconfig: %s\n", run.first.str().c_str() );
     of << "===\nconfig: " << run.first.str().c_str() << endl;
     for ( auto &x : run.second ) {
-      of << "sender: tp=" << x.first / run.first.link_ppt << ", del=" << x.second / run.first.delay << endl;
+      of << "sender: tp=" << x.first << ", del=" << x.second << endl;
       printf( "sender: [tp=%f, del=%f]\n", x.first / run.first.link_ppt, x.second / run.first.delay );
       norm_score += log2( x.first / run.first.link_ppt ) - log2( x.second / run.first.delay );
     }
@@ -58,19 +58,21 @@ int main( int argc, char *argv[] )
   WhiskerTree whiskers;
   FinTree fins;
   bool is_poisson = false;
-  unsigned int num_senders = 2;
-  double link_ppt = 1.0;
-  double delay = 100.0;
-  double mean_on_duration = 500.0;
-  double mean_off_duration = 500.0;
+  unsigned int num_senders = 1;
+  double link_ppt = 3;
+  double delay = 20;
+  double mean_on_duration = 1000.0;
+  double mean_off_duration = 100.0;
+  // double buffer_size = 250;
   double buffer_size = numeric_limits<unsigned int>::max();
-  double stochastic_loss_rate = 0;
+  double stochastic_loss_rate = 0.001;
   unsigned int simulation_ticks = 10000;
   bool is_range = false;
   RemyBuffers::ConfigRange input_config;
   string config_filename;
   string output_filename;
   int default_sample_num = 100;
+  int seed = time(NULL);
 
   for ( int i = 1; i < argc && !is_poisson; i++ ) {
     string arg( argv[ i ] );
@@ -159,7 +161,18 @@ int main( int argc, char *argv[] )
       stochastic_loss_rate = atof( arg.substr( 6 ).c_str() );
       fprintf( stderr, "Setting stochastic loss rate to %f\n", stochastic_loss_rate );
     }
+    
+    else if ( arg.substr( 0, 5 ) == "seed=" ) {
+      seed = atoi( arg.substr( 5 ).c_str() );
+      fprintf( stderr, "Setting seed to %d \n", seed );
+    }
+    else if ( arg.substr( 0, 7 ) == "sample=" ) {
+      default_sample_num = atoi( arg.substr( 7 ).c_str() );
+      fprintf( stderr, "Setting sample size to %d \n", default_sample_num );
+    }
   }
+  
+  srand(seed);
 
   ConfigRange configuration_range;
   int sample_num = 0;
@@ -184,7 +197,7 @@ int main( int argc, char *argv[] )
     parse_outcome< Evaluator< FinTree >::Outcome > ( outcome, output_filename );
   } else {
     Evaluator< WhiskerTree > eval( configuration_range, sample_num );
-    auto outcome = eval.score( whiskers, false, 10);
+    auto outcome = eval.score( whiskers, false, 1);
     parse_outcome< Evaluator< WhiskerTree >::Outcome > ( outcome, output_filename );
   }
 
