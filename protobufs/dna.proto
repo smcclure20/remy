@@ -41,6 +41,8 @@ message MemoryRange {
     RTT_DIFF = 4;
     QUEUEING_DELAY = 5;
     SINCE_LAST_LOSS = 6;
+    INT_QUEUE = 7;
+    INT_LINK = 8;
   }
 
   repeated Axis active_axis = 13;
@@ -54,6 +56,8 @@ message Memory {
   optional double rtt_diff = 25;
   optional double queueing_delay = 26;
   optional double recent_loss = 27;
+  optional double int_queue = 28;
+  optional double int_link = 29;
 }
 
 message Whisker {

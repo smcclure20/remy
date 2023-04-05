@@ -122,6 +122,10 @@ int main( int argc, char *argv[] )
             signals.emplace_back(RemyBuffers::MemoryRange::SLOW_REC_EWMA);
           } else if ( c == 'l' ) {
             signals.emplace_back(RemyBuffers::MemoryRange::SINCE_LAST_LOSS);
+          } else if ( c == 'q' ) {
+            signals.emplace_back(RemyBuffers::MemoryRange::INT_QUEUE);
+          } else if ( c == 'k' ) {
+            signals.emplace_back(RemyBuffers::MemoryRange::INT_LINK);
           } else {
             fprintf( stderr, "Invalid signal option: %c\n", c );
             exit( 1 );

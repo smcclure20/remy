@@ -56,6 +56,9 @@ void Memory::packets_received( const vector< Packet > & packets, const unsigned 
       _rtt_diff = rtt - _min_rtt;
       assert( _rtt_diff >= 0 );
       _queueing_delay = _rec_rec_ewma * pkt_outstanding; // TODO: UNDERSTAND THIS
+
+      _int_queue = x.queue_stat; //  TODO: Maybe some smoothing??
+      _int_link = x.link_stat;
     }
   }
 }
@@ -92,13 +95,19 @@ string Memory::str( unsigned int num ) const
     case 6:
       snprintf( tmp, 50, "loss=%f ", _recent_loss );
       break;
+    case 7:
+      snprintf( tmp, 50, "intqueue=%f ", _int_queue );
+      break;
+    case 8:
+      snprintf( tmp, 50, "intlink=%f ", _int_link );
+      break;
   }
   return tmp;
 }
 
 const Memory & MAX_MEMORY( void )
 {
-  static const Memory max_memory( { 163840, 163840, 163840, 163840, 163840, 163840, 163840 } );
+  static const Memory max_memory( { 163840, 163840, 163840, 163840, 163840, 163840, 163840, 163840, 163840 } );
   return max_memory;
 }
 
@@ -112,6 +121,8 @@ RemyBuffers::Memory Memory::DNA( void ) const
   ret.set_rtt_diff( _rtt_diff );
   ret.set_queueing_delay( _queueing_delay );
   ret.set_recent_loss( _recent_loss );
+  ret.set_int_queue( _int_queue );
+  ret.set_int_link( _int_link );
   return ret;
 }
 
@@ -127,6 +138,8 @@ Memory::Memory( const bool is_lower_limit, const RemyBuffers::Memory & dna )
     _rtt_diff( get_val_or_default( dna, rtt_diff, is_lower_limit ) ),
     _queueing_delay( get_val_or_default( dna, queueing_delay, is_lower_limit ) ),
     _recent_loss( get_val_or_default( dna, recent_loss, is_lower_limit ) ),
+    _int_queue( get_val_or_default( dna, int_queue, is_lower_limit ) ),
+    _int_link( get_val_or_default( dna, int_link, is_lower_limit ) ),
     _last_tick_sent( 0 ),
     _last_tick_received( 0 ),
     _min_rtt( 0 ),
@@ -144,6 +157,8 @@ size_t hash_value( const Memory & mem )
   boost::hash_combine( seed, mem._rtt_diff );
   boost::hash_combine( seed, mem._queueing_delay );
   boost::hash_combine( seed, mem._recent_loss );
+  boost::hash_combine( seed, mem._int_queue );
+  boost::hash_combine( seed, mem._int_link );
 
   return seed;
 }
