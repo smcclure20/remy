@@ -8,15 +8,20 @@ public:
   unsigned int flow_id;
   double tick_sent, tick_received;
   int seq_num;
+  double queue_stat;
+  double link_stat;
 
   Packet( const unsigned int & s_src,
 	  const unsigned int & s_flow_id,
 	  const double & s_tick_sent,
 	  const int & s_seq_num )
     : src( s_src ),
-      flow_id( s_flow_id ), tick_sent( s_tick_sent ),
+      flow_id( s_flow_id ), 
+      tick_sent( s_tick_sent ),
       tick_received( -1 ),
-      seq_num( s_seq_num )
+      seq_num( s_seq_num ),
+      queue_stat(0),
+      link_stat(0)
   {}
 };
 

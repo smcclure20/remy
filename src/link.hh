@@ -7,6 +7,8 @@
 #include "packet.hh"
 #include "delay.hh"
 
+// TODO: Clean this up
+
 class Link
 {
 private:
@@ -16,32 +18,41 @@ private:
 
   unsigned int _limit;
 
+  int _packet_counter;
+
+  double _counter_interval;
+
+  double _last_reset;
+
 public:
   Link( const double s_rate,
 	const unsigned int s_limit )
-    : _buffer(), _pending_packet( 1.0 / s_rate ), _limit( s_limit ) {}
+    : _buffer(), _pending_packet( 1.0 / s_rate ), _limit( s_limit ), _packet_counter(0), _counter_interval(10), _last_reset(0) {}
 
-  void accept( const Packet & p, const double & tickno ) noexcept {
+  int get_buffer_size(void) { return _buffer.size(); }
+
+  void clear_packet_counter(double tickno) {_packet_counter = 0; _last_reset = tickno;}
+  double get_recent_util(void) {return (_packet_counter / _counter_interval) / ( 1 / _pending_packet.delay());}
+
+  void set_int_fields(Packet & p) {p.queue_stat = get_buffer_size(); p.link_stat = get_recent_util();}
+
+  void accept( Packet & p, const double & tickno ) noexcept {
     if ( _pending_packet.empty() ) {
+      set_int_fields(p);
       _pending_packet.accept( p, tickno );
+      _packet_counter++;
     } else {
       if ( _limit and _buffer.size() < _limit ) {
-        // if ((int)_buffer.size() > 0){
-        //   printf("Adding packet to buffer (len: %d) (limit: %u)\n", (int) _buffer.size(), _limit);
-        // }
         
         _buffer.push_back( p );
       }
-      // else {
-      //   printf("Pending packet nonempty and no buffer\n");
-      // }
     }
   }
 
   template <class NextHop>
   void tick( NextHop & next, const double & tickno );
 
-  double next_event_time( const double & tickno ) const { return _pending_packet.next_event_time( tickno ); }
+  double next_event_time( const double & tickno ) const { return std::min(_pending_packet.next_event_time( tickno ), _last_reset + _counter_interval); }
 
   std::vector<unsigned int> packets_in_flight( const unsigned int num_senders ) const
   {
