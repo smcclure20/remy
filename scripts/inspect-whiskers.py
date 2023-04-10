@@ -17,13 +17,16 @@ def load_whiskers(whisker_file_name):
 # def analyze(constraint):
 #     for whisker
 
+def whisker_slowrecwma_constraint(whisker):
+    return not(whisker.domain.upper.slow_rec_rec_ewma >= 0 and whisker.domain.lower.slow_rec_rec_ewma <= 0)
+
 def whisker_rttr_constraint(whisker):
     lower_constraint = whisker.domain.lower.rtt_ratio == 1.0
     upper_constraint = whisker.domain.upper.rtt_ratio == 1.0
     return lower_constraint and upper_constraint
 
 def whisker_intersend_constraint(whisker):
-    return whisker.intersend < 1.5
+    return whisker.intersend < 0.8 and whisker.domain.upper.rtt_ratio > 2.0
 
 
 def mem_str(memory):
@@ -74,10 +77,15 @@ def count_whiskers_for_constraint(whiskertree, constraint):
 if __name__ == "__main__":
     whisker_file = sys.argv[1]
     whiskertree = load_whiskers(whisker_file)
-    # whiskers = get_whiskers_for_constraint(whiskertree, whisker_rttr_constraint)
+    whiskers = get_whiskers_for_constraint(whiskertree, whisker_intersend_constraint)
+    # total_intersend = 0
     # for whisker in whiskers:
-    #     print(whisker_str(whisker))
+    #     total_intersend += whisker.intersend
+        # print(whisker_str(whisker))
+    # print(total_intersend / len(whiskers))
 
-    count = count_whiskers_for_constraint(whiskertree, whisker_intersend_constraint)
-    print(count)
+    # print(whiskertree.domain.active_axis)
+
+    # count = count_whiskers_for_constraint(whiskertree, whisker_intersend_constraint)
+    # print(count)
     

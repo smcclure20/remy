@@ -25,6 +25,20 @@ Evaluator< T >::Evaluator( const ConfigRange & range, const int sample )
 }
 
 template <typename T>
+Evaluator< T >::Evaluator( const ConfigRange & range, const int seed, const int sample )
+  : _prng_seed( seed ),
+    _tick_count( range.simulation_ticks ),
+    _configs()
+{
+  if (sample == 0) {
+    _generate_configs(range);
+  }
+  else {
+    _sample_configs(range, sample);
+  }
+}
+
+template <typename T>
 ProblemBuffers::Problem Evaluator< T >::_ProblemSettings_DNA( void ) const
 {
   ProblemBuffers::Problem ret;

@@ -194,9 +194,9 @@ int main( int argc, char *argv[] )
   if ( is_poisson ) {
     Evaluator< FinTree > eval( configuration_range );
     auto outcome = eval.score( fins, false, 10 );
-    parse_outcome< Evaluator< FinTree >::Outcome > ( outcome, output_filename );
+    parse_outcome< Evaluator< FinTree >::Outcome > ( outcome, output_filename);
   } else {
-    Evaluator< WhiskerTree > eval( configuration_range, sample_num );
+    Evaluator< WhiskerTree > eval( configuration_range, seed, sample_num );
     auto outcome = eval.score( whiskers, false, 1);
     parse_outcome< Evaluator< WhiskerTree >::Outcome > ( outcome, output_filename );
   }

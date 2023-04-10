@@ -44,7 +44,8 @@ private:
   double _sample_range(double min, double max, double incr) { int index = rand() % (int)(floor((max - min) / incr) + 1); return min + (incr * index); };
 
 public:
-  Evaluator( const ConfigRange & range, const int sample = 0 );
+  Evaluator( const ConfigRange & range, const int sample = 0);
+  Evaluator( const ConfigRange & range, const int seed, const int sample = 0);
   
   ProblemBuffers::Problem DNA( const T & actions ) const;
 
