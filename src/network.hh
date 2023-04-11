@@ -8,6 +8,7 @@
 #include "delay.hh"
 #include "stochastic-loss.hh"
 #include "receiver.hh"
+#include "router.hh"
 #include "random.hh"
 #include "answer.pb.h"
 
@@ -82,6 +83,10 @@ private:
   Link _link;
   Delay _delay;
   Receiver _rec;
+  std::vector<SenderGangofGangs<Gang1Type, Gang2Type>> _senders_vector;
+  std::vector<Link> _link_vector;
+  std::vector<Delay> _delay_vector;
+  std::vector<Router> _router_vector;
 
   double _tickno;
   StochasticLoss _stochastic_loss;
@@ -91,6 +96,8 @@ public:
   Network( const typename Gang1Type::Sender & example_sender1, const typename Gang2Type::Sender & example_sender2, PRNG & s_prng, const NetConfig & config );
 
   Network( const typename Gang1Type::Sender & example_sender1, PRNG & s_prng, const NetConfig & config );
+
+  Network( const SenderType1 & example_sender1, PRNG & s_prng, const NetConfig & config, const int network_length );
 
   void run_simulation( const double & duration );
 

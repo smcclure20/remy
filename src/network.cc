@@ -34,13 +34,53 @@ Network<Gang1Type, Gang2Type>::Network( const typename Gang1Type::Sender & examp
 {
 }
 
+template <class SenderType1, class SenderType2>
+Network<SenderType1, SenderType2>::Network( const SenderType1 & example_sender1,
+                                            PRNG & s_prng,
+                                            const NetConfig & config,
+                                            const int network_length )
+  : _prng( s_prng ),
+    _senders_vector(),
+    _link_vector( network_length, config.link_ppt),
+    _delay_vector( network_length, config.delay ),
+    _rec(),
+    _routers_vector(),
+    _tickno( 0 )
+{
+  for (uint32_t i = 0; i < network_length; i++ ) {
+    _senders_vector.emplace_back( SenderGang<SenderType1>( config.mean_on_duration, config.mean_off_duration, (int)((config.num_senders/(network_length+1)) * 2), example_sender1, _prng, i ),
+                                  SenderGang<SenderType2>() );
+    if (i < (network_length - 1))
+    {
+      _routers_vector.emplace_back(Router(_link_vector.at(i+1), _rec, _prng, network_length));
+    }
+  }
+}
+
 template <class Gang1Type, class Gang2Type>
 void Network<Gang1Type, Gang2Type>::tick( void )
 {
-  _senders.tick( _link, _rec, _tickno );
-  _link.tick( _stochastic_loss, _tickno );
-  _stochastic_loss.tick( _delay, _tickno );
-  _delay.tick( _rec, _tickno );
+  if (_senders_vector.size() > 0) 
+  {
+    for (int i = 0; i < network_length; i++) 
+    {
+      _senders_vector.at(i).tick(_link_vector.at(i), _rec, _tickno);
+    }
+    for (int i = 0; i < (network_length - 1); i++) 
+    {
+      _link_vector.at(i).tick(_delay_vector.at(i), _tickno);
+      _delay_vector.at(i).tick(_router_vector.at(i), _tickno);
+    }
+    _link_vector.at(i).tick(_delay_vector.at(i), _tickno);
+    _delay_vector.at(i).tick(_rec, _tickno);
+  }
+  else
+  {
+    _senders.tick( _link, _rec, _tickno );
+    _link.tick( _stochastic_loss, _tickno );
+    _stochastic_loss.tick( _delay, _tickno );
+    _delay.tick( _rec, _tickno );
+  }
 }
 
 template <class Gang1Type, class Gang2Type>
