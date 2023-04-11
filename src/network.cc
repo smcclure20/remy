@@ -34,8 +34,8 @@ Network<Gang1Type, Gang2Type>::Network( const typename Gang1Type::Sender & examp
 {
 }
 
-template <class SenderType1, class SenderType2>
-Network<SenderType1, SenderType2>::Network( const SenderType1 & example_sender1,
+template <class Gang1Type, class Gang2Type>
+Network<Gang2Type, Gang1Type>::Network( const typename Gang1Type::Sender & example_sender1,
                                             PRNG & s_prng,
                                             const NetConfig & config,
                                             const int network_length )
@@ -48,8 +48,8 @@ Network<SenderType1, SenderType2>::Network( const SenderType1 & example_sender1,
     _tickno( 0 )
 {
   for (uint32_t i = 0; i < network_length; i++ ) {
-    _senders_vector.emplace_back( SenderGang<SenderType1>( config.mean_on_duration, config.mean_off_duration, (int)((config.num_senders/(network_length+1)) * 2), example_sender1, _prng, i ),
-                                  SenderGang<SenderType2>() );
+    _senders_vector.emplace_back( Gang1Type( config.mean_on_duration, config.mean_off_duration, (int)((config.num_senders/(network_length+1)) * 2), example_sender1, _prng, i ),
+                                  Gang2Type() );
     if (i < (network_length - 1))
     {
       _routers_vector.emplace_back(Router(_link_vector.at(i+1), _rec, _prng, network_length));

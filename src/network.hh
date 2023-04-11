@@ -97,7 +97,7 @@ public:
 
   Network( const typename Gang1Type::Sender & example_sender1, PRNG & s_prng, const NetConfig & config );
 
-  Network( const SenderType1 & example_sender1, PRNG & s_prng, const NetConfig & config, const int network_length );
+  Network( const typename Gang1Type::Sender & example_sender1, PRNG & s_prng, const NetConfig & config, const int network_length );
 
   void run_simulation( const double & duration );
 
