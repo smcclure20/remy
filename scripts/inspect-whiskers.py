@@ -17,6 +17,9 @@ def load_whiskers(whisker_file_name):
 # def analyze(constraint):
 #     for whisker
 
+def match_all(whisker):
+    return True
+
 def whisker_slowrecwma_constraint(whisker):
     return not(whisker.domain.upper.slow_rec_rec_ewma >= 0 and whisker.domain.lower.slow_rec_rec_ewma <= 0)
 
@@ -26,11 +29,14 @@ def whisker_rttr_constraint(whisker):
     return lower_constraint and upper_constraint
 
 def whisker_intersend_constraint(whisker):
-    return whisker.intersend < 0.8 and whisker.domain.upper.rtt_ratio > 2.0
+    return whisker.intersend > 0.8 and whisker.domain.lower.int_queue == 0.0
+
+def whisker_int_queue_constraint(whisker):
+    return whisker.domain.lower.int_queue == 0.0 and whisker.domain.upper.rtt_ratio < 1.01
 
 
 def mem_str(memory):
-    return "<sewma={}, recwma={}, rttr={}, slow_recwma={}, loss={}>".format(memory.rec_send_ewma, memory.rec_rec_ewma, memory.rtt_ratio, memory.slow_rec_rec_ewma, memory.recent_loss)
+    return "<sewma={}, recwma={}, rttr={}, slow_recwma={}, loss={}, intq={}, intl={}>".format(memory.rec_send_ewma, memory.rec_rec_ewma, memory.rtt_ratio, memory.slow_rec_rec_ewma, memory.recent_loss, memory.int_queue, memory.int_link)
 
 def mem_range_str(memory_range):
     return "(low: {}, hi: {}".format(mem_str(memory_range.lower), mem_str(memory_range.upper))
@@ -77,7 +83,11 @@ def count_whiskers_for_constraint(whiskertree, constraint):
 if __name__ == "__main__":
     whisker_file = sys.argv[1]
     whiskertree = load_whiskers(whisker_file)
-    whiskers = get_whiskers_for_constraint(whiskertree, whisker_intersend_constraint)
+    # print_tree(whiskertree)
+    whiskers = get_whiskers_for_constraint(whiskertree, match_all)
+    print(len(whiskers))
+    # for whisker in whiskers:
+    #     print(whisker_str(whisker))
     # total_intersend = 0
     # for whisker in whiskers:
     #     total_intersend += whisker.intersend

@@ -57,15 +57,21 @@ public:
   };
 
   static const OptimizationSettings & get_optimizer( void ) {
-    static OptimizationSettings default_settings {
+    // static OptimizationSettings default_settings {
+    //   { 0,    256, 1,    32,  4, 1 }, /* window increment */ // +/- 1, 4, 16
+    //   { 0,    1,   0.01, 0.5, 4, 1 }, /* window multiple */  // +/- 0.01, 0.04, 0.16
+    //   { 0.1, 3,   0.05, 1,   4, 1.5 } /* intersend */         // +/- 0.05, 0.20, 0.8
+    // };
+
+    static OptimizationSettings default_dc_settings {
       { 0,    256, 1,    32,  4, 1 }, /* window increment */ // +/- 1, 4, 16
       { 0,    1,   0.01, 0.5, 4, 1 }, /* window multiple */  // +/- 0.01, 0.04, 0.16
-      { 0.1, 3,   0.05, 1,   4, 1.5 } /* intersend */         // +/- 0.05, 0.20, 0.8
+      { 0.001, 1,   0.0001, 0.1,   4, 0.01 } /* intersend */         // +/- 0.05, 0.20, 0.8
     };
       // { 0,    256, 1,    32,  4, 1 }, /* window increment */ // +/- 1, 4, 16
       // { 0,    1,   0.01, 0.5, 4, 1 }, /* window multiple */  // +/- 0.01, 0.04, 0.16
       // { 0.25, 3,   0.05, 1,   4, 3 } /* intersend */         // +/- 0.05, 0.20, 0.8
-    return default_settings;
+    return default_dc_settings;
   }
 };
 

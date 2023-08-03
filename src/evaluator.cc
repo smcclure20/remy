@@ -11,22 +11,8 @@
 using namespace std;
 
 template <typename T>
-Evaluator< T >::Evaluator( const ConfigRange & range, const int sample )
-  : _prng_seed( global_PRNG()() ), /* freeze the PRNG seed for the life of this Evaluator */
-    _tick_count( range.simulation_ticks ),
-    _configs()
-{
-  if (sample == 0) {
-    _generate_configs(range);
-  }
-  else {
-    _sample_configs(range, sample);
-  }
-}
-
-template <typename T>
-Evaluator< T >::Evaluator( const ConfigRange & range, const int seed, const int sample )
-  : _prng_seed( seed ),
+Evaluator< T >::Evaluator( const ConfigRange & range, const int sample, const int seed )
+  : _prng_seed( seed != 0 ? global_PRNG()() : seed ), /* freeze the PRNG seed for the life of this Evaluator */
     _tick_count( range.simulation_ticks ),
     _configs()
 {
@@ -137,16 +123,13 @@ Evaluator< WhiskerTree >::Outcome Evaluator< WhiskerTree >::score( WhiskerTree &
     Network<SenderGang<Rat, TimeSwitchedSender<Rat>>,
       SenderGang<Rat, TimeSwitchedSender<Rat>>> network1( Rat( run_whiskers, trace ), run_prng, x );
     
-    // auto start = std::chrono::system_clock::now();
     network1.run_simulation( ticks_to_run );
-    // auto end = std::chrono::system_clock::now();
-    // std::chrono::duration<double> elapsed_seconds = end-start;
-    // std::cout << "config elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
-    // printf("Netconfig: %s", x.str().c_str());
+
+    double score = network1.senders().utility( (double) (ticks_to_run - x.delay) );
     
-    the_outcome.score += network1.senders().utility( (double) (ticks_to_run - x.delay) );
-    // the_outcome.score += network1.senders().utility( );
-    // printf("Network utility: %f\n", network1.senders().utility( (double) (ticks_to_run - x.delay) ));
+    the_outcome.score += score;
+    the_outcome.raw_scores.push_back(score);
+
     the_outcome.throughputs_delays.emplace_back( x, network1.senders().throughputs_delays() );
   }
 
@@ -235,7 +218,7 @@ AnswerBuffers::Outcome Evaluator< T >::Outcome::DNA( void ) const
 
 template <typename T>
 Evaluator< T >::Outcome::Outcome( const AnswerBuffers::Outcome & dna )
-  : score( dna.score() ), throughputs_delays(), used_actions() {
+  : score( dna.score() ), raw_scores(), throughputs_delays(), used_actions() {
   for ( const auto &x : dna.throughputs_delays() ) {
     vector< pair< double, double > > tp_del;
     for ( const auto &result : x.results() ) {

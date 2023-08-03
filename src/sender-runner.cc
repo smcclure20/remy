@@ -15,7 +15,7 @@
 using namespace std;
 
 template <typename T>
-void print_tree(T & tree) 
+void print_tree(T & tree)  // go to file if there is an OF, otherwise stdout
 {
   if ( tree.has_config() ) {
     printf( "Prior assumptions:\n%s\n\n", tree.config().DebugString().c_str() );
@@ -27,30 +27,42 @@ void print_tree(T & tree)
 }
 
 template <typename T>
-void parse_outcome( T & outcome, string output_file ) 
+void parse_outcome( T & outcome, bool verb ) 
 {
-  ofstream of;
-  of.open(output_file);
-
   printf( "score = %f\n", outcome.score );
-  of << "score=" << outcome.score << endl;
-  double norm_score = 0;
+  
 
-  for ( auto &run : outcome.throughputs_delays ) {
-    printf( "===\nconfig: %s\n", run.first.str().c_str() );
-    of << "===\nconfig: " << run.first.str().c_str() << endl;
-    for ( auto &x : run.second ) {
-      of << "sender: tp=" << x.first << ", del=" << x.second << endl;
-      printf( "sender: [tp=%f, del=%f]\n", x.first / run.first.link_ppt, x.second / run.first.delay );
-      norm_score += log2( x.first / run.first.link_ppt ) - log2( x.second / run.first.delay );
+  double filtered_score = 0;
+  int run_count = 0;
+  if (outcome.score < 0) {
+    for (auto &raw_score : outcome.raw_scores)
+    {
+      if (raw_score > 0)
+      {
+        filtered_score += raw_score;
+        run_count ++;
+      }
     }
+    printf("filtered score: %f\n", filtered_score);
+    printf("number of runs: %d\n", run_count);
+  }
+
+  double norm_score = 0;
+  if (verb)
+  {
+      int i = 0;
+      for ( auto &run : outcome.throughputs_delays ) {
+        printf( "===\nconfig: %s\n", run.first.str().c_str() );
+        printf( "score: %f\n", outcome.raw_scores.at(i));
+        for ( auto &x : run.second ) {
+          printf( "sender: [tp=%f, del=%f] (tpr=%f, delr=%f)\n", x.first, x.second, x.first / run.first.link_ppt, x.second / run.first.delay );
+          norm_score += log2( x.first / run.first.link_ppt ) - log2( x.second / run.first.delay );
+        }
+        i++;
+      }
   }
 
   printf( "normalized_score = %f\n", norm_score );
-  of << "normalized_score=" << norm_score << endl;
-  of.close();
-
-  // printf( "Rules: %s\n", outcome.used_actions.str().c_str() );
 }
 
 int main( int argc, char *argv[] )
@@ -71,6 +83,7 @@ int main( int argc, char *argv[] )
   RemyBuffers::ConfigRange input_config;
   string config_filename;
   string output_filename;
+  bool verbose = false;
   int default_sample_num = 100;
   int seed = time(NULL);
 
@@ -100,26 +113,22 @@ int main( int argc, char *argv[] )
           fprintf( stderr, "Could not parse %s.\n", filename.c_str() );
           exit( 1 );
         }
-        fins = FinTree( tree );
         print_tree< RemyBuffers::FinTree >(tree);
+        fins = FinTree( tree );
       } else {
         RemyBuffers::WhiskerTree tree;
         if ( !tree.ParseFromFileDescriptor( fd ) ) {
           fprintf( stderr, "Could not parse %s.\n", filename.c_str() );
           exit( 1 );
         }
-        whiskers = WhiskerTree( tree );  
         print_tree< RemyBuffers::WhiskerTree >(tree);
-        printf("Number of rules in the tree: %d\n", whiskers.total_whiskers());
+        whiskers = WhiskerTree( tree );  
       }
 
       if ( close( fd ) < 0 ) {
         perror( "close" );
         exit( 1 );
       }
-    } else if ( arg.substr( 0, 3 ) == "of=" ) {
-      output_filename = string( arg.substr( 3 ) );
-
     } else if ( arg.substr( 0, 4 ) == "cfg=" ) {
       is_range = true;
       config_filename = string( arg.substr( 4 ) );
@@ -170,6 +179,10 @@ int main( int argc, char *argv[] )
       default_sample_num = atoi( arg.substr( 7 ).c_str() );
       fprintf( stderr, "Setting sample size to %d \n", default_sample_num );
     }
+
+    else if (arg.substr(0, 2) == "-v") {
+      verbose = true;
+    }
   }
   
   srand(seed);
@@ -194,11 +207,13 @@ int main( int argc, char *argv[] )
   if ( is_poisson ) {
     Evaluator< FinTree > eval( configuration_range );
     auto outcome = eval.score( fins, false, 10 );
-    parse_outcome< Evaluator< FinTree >::Outcome > ( outcome, output_filename);
+    parse_outcome< Evaluator< FinTree >::Outcome > ( outcome, verbose);
   } else {
-    Evaluator< WhiskerTree > eval( configuration_range, seed, sample_num );
+    
+    printf("Number of rules in the tree: %d\n", whiskers.total_whiskers());
+    Evaluator< WhiskerTree > eval( configuration_range, sample_num, seed );
     auto outcome = eval.score( whiskers, false, 1);
-    parse_outcome< Evaluator< WhiskerTree >::Outcome > ( outcome, output_filename );
+    parse_outcome< Evaluator< WhiskerTree >::Outcome > ( outcome, verbose );
   }
 
   return 0;
