@@ -26,6 +26,7 @@ Makefile.in
 /protobufs/*.pb.cc
 /protobufs/*.pb.h
 /protobufs/*_pb2.py
+/protobufs/__pycache__/*
 /src/configuration
 /src/inspect-config
 /src/sender-runner
