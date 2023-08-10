@@ -120,8 +120,8 @@ Evaluator< WhiskerTree >::Outcome Evaluator< WhiskerTree >::score( WhiskerTree &
   Evaluator::Outcome the_outcome;
   for ( auto &x : configs ) {
     /* run once */
-    Network<SenderGang<Rat, TimeSwitchedSender<Rat>>,
-      SenderGang<Rat, TimeSwitchedSender<Rat>>> network1( Rat( run_whiskers, trace ), run_prng, x );
+    Network<SenderGang<Rat, ByteSwitchedSender<Rat>>,
+      SenderGang<Rat, ByteSwitchedSender<Rat>>> network1( Rat( run_whiskers, trace ), run_prng, x );
     
     network1.run_simulation( ticks_to_run );
 
@@ -267,8 +267,8 @@ Evaluator< WhiskerTree >::Outcome Evaluator< WhiskerTree >::score_config( Whiske
   /* run tests */
   Evaluator::Outcome the_outcome;
 
-  Network<SenderGang<Rat, TimeSwitchedSender<Rat>>, 
-  SenderGang<Rat, TimeSwitchedSender<Rat>>> network1( Rat( run_whiskers, trace ), run_prng, config );
+  Network<SenderGang<Rat, ByteSwitchedSender<Rat>>, 
+  SenderGang<Rat, ByteSwitchedSender<Rat>>> network1( Rat( run_whiskers, trace ), run_prng, config );
   network1.run_simulation( ticks_to_run );
 
   the_outcome.score = network1.senders().utility();

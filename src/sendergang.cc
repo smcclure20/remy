@@ -222,12 +222,12 @@ void ByteSwitchedSender<SenderType>::tick( NextHop & next, Receiver & rec,
 
   /* possibly send packets */
   if ( SwitchedSender<SenderType>::sending ) {
-    assert( SwitchedSender<SenderType>::sender.packets_sent() < packets_sent_cap_ );
+    assert( (int) SwitchedSender<SenderType>::sender.packets_sent() < (int) packets_sent_cap_ );
     SwitchedSender<SenderType>::sender.send( SwitchedSender<SenderType>::id, next, tickno, packets_sent_cap_ );
     SwitchedSender<SenderType>::accumulate_sending_time_until( tickno, num_sending );
 
     /* do we need to switch ourselves off? */
-    if ( SwitchedSender<SenderType>::sender.packets_sent() == packets_sent_cap_ ) {
+    if ( (int) SwitchedSender<SenderType>::sender.packets_sent() == (int) packets_sent_cap_ ) {
       SwitchedSender<SenderType>::switch_off( tickno, num_sending );
       SwitchedSender<SenderType>::next_switch_tick = tickno + start_distribution.sample( prng );
     }
