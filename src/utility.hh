@@ -62,7 +62,7 @@ public:
       return -INT_MAX;
     }
 
-    return _tick_share_sending;
+    return -1 * _tick_share_sending;
   }
 
   SimulationResultBuffers::UtilityData DNA() const {
