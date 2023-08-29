@@ -19,7 +19,7 @@ public:
 
   Utility( double start_tick ) : _tick_share_sending( 0 ), _packets_received( 0 ), _total_delay( 0 ), _first_send_tick( start_tick ) {}
 
-  void sending_duration( const double & duration, const unsigned int num_sending ) { _tick_share_sending += duration;}
+  void sending_duration( const double & duration, const unsigned int num_sending __attribute((unused))) { _tick_share_sending += duration;}
   void packets_received( const std::vector< Packet > & packets ) {
     _packets_received += packets.size();
 
