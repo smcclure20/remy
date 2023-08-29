@@ -19,7 +19,7 @@ public:
 
   Utility( double start_tick ) : _tick_share_sending( 0 ), _packets_received( 0 ), _total_delay( 0 ), _first_send_tick( start_tick ) {}
 
-  void sending_duration( const double & duration, const unsigned int num_sending ) { _tick_share_sending += duration / double( num_sending );}
+  void sending_duration( const double & duration, const unsigned int num_sending ) { _tick_share_sending += duration;}
   void packets_received( const std::vector< Packet > & packets ) {
     _packets_received += packets.size();
 
@@ -62,10 +62,7 @@ public:
       return -INT_MAX;
     }
 
-    const double throughput_utility = log2( average_throughput_normalized_to_equal_share() );
-    const double delay_penalty = log2( average_delay() / 100.0 );
-
-    return throughput_utility - delay_penalty;
+    return _tick_share_sending;
   }
 
   SimulationResultBuffers::UtilityData DNA() const {
