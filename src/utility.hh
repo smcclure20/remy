@@ -11,6 +11,7 @@ class Utility
 private:
   double _tick_share_sending;
   unsigned int _packets_received;
+  unsigned int _packets_sent;
   double _total_delay;
   double _first_send_tick;
 
@@ -20,6 +21,7 @@ public:
   Utility( double start_tick ) : _tick_share_sending( 0 ), _packets_received( 0 ), _total_delay( 0 ), _first_send_tick( start_tick ) {}
 
   void sending_duration( const double & duration, const unsigned int num_sending __attribute((unused))) { _tick_share_sending += duration;}
+  void packets_sent(const unsigned int num_pkts) {_packets_sent += num_pkts;}
   void packets_received( const std::vector< Packet > & packets ) {
     _packets_received += packets.size();
 
@@ -62,7 +64,7 @@ public:
       return -INT_MAX;
     }
 
-    return -1 * _tick_share_sending;
+    return -1 * _tick_share_sending - (_packets_sent - _packets_received);
   }
 
   SimulationResultBuffers::UtilityData DNA() const {

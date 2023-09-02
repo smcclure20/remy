@@ -225,6 +225,7 @@ void ByteSwitchedSender<SenderType>::tick( NextHop & next, Receiver & rec,
     assert( (int) SwitchedSender<SenderType>::sender.packets_sent() < (int) packets_sent_cap_ );
     SwitchedSender<SenderType>::sender.send( SwitchedSender<SenderType>::id, next, tickno, packets_sent_cap_ );
     SwitchedSender<SenderType>::accumulate_sending_time_until( tickno, num_sending );
+    utility.packets_sent(SwitchedSender<SenderType>::sender.packets_sent())
 
     /* do we need to switch ourselves off? */
     if ( (int) SwitchedSender<SenderType>::sender.packets_sent() == (int) packets_sent_cap_ ) {
