@@ -16,9 +16,9 @@ private:
   double _first_send_tick;
 
 public:
-  Utility( void ) : _tick_share_sending( 0 ), _packets_received( 0 ), _total_delay( 0 ), _first_send_tick( 0 ) {}
+  Utility( void ) : _tick_share_sending( 0 ), _packets_received( 0 ), _packets_sent( 0 ), _total_delay( 0 ), _first_send_tick( 0 ) {}
 
-  Utility( double start_tick ) : _tick_share_sending( 0 ), _packets_received( 0 ), _total_delay( 0 ), _first_send_tick( start_tick ) {}
+  Utility( double start_tick ) : _tick_share_sending( 0 ), _packets_received( 0 ), _packets_sent( 0 ), _total_delay( 0 ), _first_send_tick( start_tick ) {}
 
   void sending_duration( const double & duration, const unsigned int num_sending __attribute((unused))) { _tick_share_sending += duration;}
   void packets_sent(const unsigned int num_pkts) {_packets_sent += num_pkts;}
