@@ -1,7 +1,7 @@
 #!/bin/bash
 
 import sys
-sys.path.insert(0, "/home/eecs/sarah/remy")
+sys.path.insert(0, "/home/sarah_mcclure/remy")
 
 from protobufs.dna_pb2 import WhiskerTree
 
@@ -83,7 +83,7 @@ def count_whiskers_for_constraint(whiskertree, constraint):
 if __name__ == "__main__":
     whisker_file = sys.argv[1]
     whiskertree = load_whiskers(whisker_file)
-    # print_tree(whiskertree)
+    #print_tree(whiskertree)
     whiskers = get_whiskers_for_constraint(whiskertree, match_all)
     print(len(whiskers))
     # for whisker in whiskers:
