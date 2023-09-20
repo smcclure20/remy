@@ -83,7 +83,7 @@ def count_whiskers_for_constraint(whiskertree, constraint):
 if __name__ == "__main__":
     whisker_file = sys.argv[1]
     whiskertree = load_whiskers(whisker_file)
-    # print_tree(whiskertree)
+    print_tree(whiskertree)
     whiskers = get_whiskers_for_constraint(whiskertree, match_all)
     print(len(whiskers))
     # for whisker in whiskers:

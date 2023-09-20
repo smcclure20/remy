@@ -39,3 +39,4 @@ Makefile.in
 
 tmp*.txt
 /scripts/output
+/results/evals
