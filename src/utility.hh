@@ -65,7 +65,7 @@ public:
     const double throughput_utility = log2( average_throughput_normalized_to_equal_share() );
     const double delay_penalty = log2( average_delay() / 100.0 );
 
-    return throughput_utility - delay_penalty;
+    return throughput_utility - 2 * delay_penalty;
   }
 
   SimulationResultBuffers::UtilityData DNA() const {
