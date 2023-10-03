@@ -9,7 +9,7 @@ struct WhiskerImproverOptions
   bool optimize_window_multiple = true;
   bool optimize_intersend = true;
   int alternates_limit = 343;
-  int sample_size = 50;
+  int sample_size = 200;
 };
 
 class WhiskerImprover : public ActionImprover< WhiskerTree, Whisker >
