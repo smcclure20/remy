@@ -38,14 +38,14 @@ public:
   double get_recent_util() {
     double total_count = 0;
     total_count = std::accumulate(_packet_counters, _packet_counters + 10, total_count);
-    assert(( total_count / _counter_interval) / ( 1 / _pending_packet.delay()) < 150);
+    assert(( total_count / _counter_interval) / ( 1 / _pending_packet.delay()) < 1.50);
     return ( total_count / _counter_interval) / ( 1 / _pending_packet.delay()); // This can be off by at most 10% if the current bucket just changed
   }
 
   double get_avail_capacity() {
     double total_count = 0;
     total_count = std::accumulate(_packet_counters, _packet_counters + 10, total_count);
-    return std::min(( 1 / _pending_packet.delay()) -  ( total_count / _counter_interval), (double)0); 
+    return std::max(( 1 / _pending_packet.delay()) -  ( total_count / _counter_interval), (double)0); 
   }
 
   void add_packet_to_counter(double tickno) {
