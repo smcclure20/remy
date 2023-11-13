@@ -45,7 +45,14 @@ vector< Whisker > Whisker::next_generation( bool optimize_window_increment, bool
 
   auto window_increment_alternatives = get_optimizer().window_increment.alternatives( _window_increment, optimize_window_increment, alts_per_dimension );
   auto window_multiple_alternatives = get_optimizer().window_multiple.alternatives( _window_multiple, optimize_window_multiple, alts_per_dimension );
-  auto intersend_alternatives = get_optimizer().intersend.alternatives( _intersend, optimize_intersend, alts_per_dimension );
+  std::vector<double> intersend_alternatives;
+  if (_intersend < 0) {
+    intersend_alternatives = get_optimizer().intersend.alternatives( get_optimizer().intersend.default_value, optimize_intersend, alts_per_dimension );
+  }
+  else {
+    intersend_alternatives = get_optimizer().intersend.alternatives( _intersend, optimize_intersend, alts_per_dimension );
+  }
+  // auto intersend_alternatives = get_optimizer().intersend.alternatives( _intersend, optimize_intersend, alts_per_dimension );
 
   printf("Window increment alternatives (%d), window multiple alternatives (%d), intersend alternatives (%d)\n", 
          (int)window_increment_alternatives.size(), (int)window_multiple_alternatives.size(), (int)intersend_alternatives.size());
@@ -58,6 +65,8 @@ vector< Whisker > Whisker::next_generation( bool optimize_window_increment, bool
          *(min_element(intersend_alternatives.begin(), intersend_alternatives.end())),
          *(max_element(intersend_alternatives.begin(), intersend_alternatives.end()))
   );
+
+  intersend_alternatives.push_back(-1); // Sign to just take rewma
 
   for ( const auto & alt_window : window_increment_alternatives ) {
     for ( const auto & alt_multiple : window_multiple_alternatives ) {
