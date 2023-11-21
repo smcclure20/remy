@@ -15,7 +15,7 @@ def load_whiskers(whisker_file_name):
 
 
 def mem_str(memory):
-    return "{},{},{},{},{}".format(memory.rec_send_ewma, memory.rec_rec_ewma, memory.rtt_ratio, memory.slow_rec_rec_ewma)
+    return "{},{},{},{},{},{}".format(memory.rec_send_ewma, memory.rec_rec_ewma, memory.rtt_ratio, memory.slow_rec_rec_ewma, memory.int_queue, memory.int_link)
 
 def mem_range_str(memory_range):
     return "{},{}".format(mem_str(memory_range.lower), mem_str(memory_range.upper))
@@ -24,10 +24,9 @@ def whisker_str(whisker):
     return "{},{},{},{}".format(mem_range_str(whisker.domain), whisker.window_increment, whisker.window_multiple, whisker.intersend)
 
 def header_str():
-    return "low_sewma,low_rewma,low_rttr,low_slowrewma,hi_sewma,hi_rewma,hi_rttr,hi_slowrewma,win_incr,win_mult,inter"
+    return "low_sewma,low_rewma,low_rttr,low_slowrewma,low_intq,low_intl,hi_sewma,hi_rewma,hi_rttr,hi_slowrewma,hi_intq,hi_intl,win_incr,win_mult,inter"
 
 def print_tree(whiskers, output):
-    output.write(header_str + "\n")
     if len(whiskers.children) == 0:
         output.write(whisker_str(whiskers.leaf) + "\n")
     
@@ -41,6 +40,7 @@ if __name__ == "__main__":
     whiskertree = load_whiskers(whisker_file)
     output_file_name = sys.argv[2]
     op = open("./output/{}".format(output_file_name), "w")
+    op.write(header_str() + "\n")
     whiskers = print_tree(whiskertree, op)
     # total_intersend = 0
     # for whisker in whiskers:

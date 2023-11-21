@@ -18,6 +18,10 @@ void Rat::send( const unsigned int id, NextHop & next, const double & tickno,
     _intersend_time = current_whisker.intersend();
   }
 
+  if (_the_window == 0) {
+    std::cout << "Window is 0 at time " << tickno << std::endl;
+  }
+
   if ( (int( _packets_sent ) < _largest_ack + 1 + _the_window)
        and (_last_send_time + _intersend_time <= tickno) ) {
 
