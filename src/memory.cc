@@ -59,6 +59,7 @@ void Memory::packets_received( const vector< Packet > & packets, const unsigned 
 
       // _int_queue = x.queue_stat; //  TODO: Maybe some smoothing??
       // _int_link = x.link_stat;
+      // std::cout << "Received packet with intq=" << x.queue_stat << ", intl=" << x.link_stat << std::endl;
       _int_queue = (1 - alpha) * _int_queue + alpha * x.queue_stat;
       _int_link = (1 - alpha) * _int_link + alpha * x.link_stat;
     }
@@ -68,7 +69,7 @@ void Memory::packets_received( const vector< Packet > & packets, const unsigned 
 string Memory::str( void ) const
 {
   char tmp[ 256 ];
-  snprintf( tmp, 256, "sewma=%f, rewma=%f, rttr=%f, slowrewma=%f, rttd=%f, qdelay=%f, loss=%f", _rec_send_ewma, _rec_rec_ewma, _rtt_ratio, _slow_rec_rec_ewma, _rtt_diff, _queueing_delay, _recent_loss );
+  snprintf( tmp, 256, "sewma=%f, rewma=%f, rttr=%f, slowrewma=%f, rttd=%f, qdelay=%f, loss=%f, intq=%f, intl=%f", _rec_send_ewma, _rec_rec_ewma, _rtt_ratio, _slow_rec_rec_ewma, _rtt_diff, _queueing_delay, _recent_loss, _int_queue, _int_link );
   return tmp;
 }
 
