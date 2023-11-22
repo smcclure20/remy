@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Gets the whisker actions for a midpoint in each whisker of the first whisker tree provided
+# I am pretty sure these scripts do the exact same thing
+
 import sys
 sys.path.insert(0, "/home/eecs/sarah/remy")
 

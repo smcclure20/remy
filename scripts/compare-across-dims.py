@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Gets the actions for a midpoint in each whisker of the first whisker tree provided, ignoring some dimensions
+# Therefore, for every whisker in the first whisker tree, there will be a whisker in the output 
+
 import sys
 sys.path.insert(0, "/home/eecs/sarah/remy")
 
@@ -115,5 +118,5 @@ if __name__ == "__main__":
     ref_whiskertree = load_whiskers(reference_whisker_file)
     whiskertree = load_whiskers(whisker_file)
     # print_tree(whiskertree)
-    whiskers = match_whiskers(ref_whiskertree, whiskertree, "int_link", output_file)
+    whiskers = match_whiskers(ref_whiskertree, whiskertree, "int_queue", output_file)
     

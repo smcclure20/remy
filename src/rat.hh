@@ -27,6 +27,8 @@ private:
   int _the_window;
   double _intersend_time;
 
+  bool _initial;
+
   unsigned int _flow_id;
   int _largest_ack;
 
