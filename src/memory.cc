@@ -59,7 +59,7 @@ void Memory::packets_received( const vector< Packet > & packets, const unsigned 
 
       // _int_queue = x.queue_stat; //  TODO: Maybe some smoothing??
       // _int_link = x.link_stat;
-      std::cout << "Received packet with intq=" << x.queue_stat << ", intl=" << x.link_stat << std::endl;
+      // std::cout << "Received packet with intq=" << x.queue_stat << ", intl=" << x.link_stat << std::endl;
       _int_queue = (1 - alpha) * _int_queue + alpha * x.queue_stat;
       _int_link = (1 - alpha) * _int_link + alpha * x.link_stat;
     }
