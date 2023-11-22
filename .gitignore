@@ -5,6 +5,7 @@ Makefile
 Makefile.in
 *.log
 *.trs
+.nfs*
 
 /INSTALL
 /aclocal.m4

@@ -83,8 +83,8 @@ vector< Whisker > Whisker::next_generation( bool optimize_window_increment, bool
 
 string Whisker::str( const unsigned int total ) const
 {
-  char tmp[ 256 ];
-  snprintf( tmp, 256, "{%s} gen=%u usage=%.4f => (win=%d + %f * win, intersend=%f)",
+  char tmp[ 512 ];
+  snprintf( tmp, 512, "{%s} gen=%u usage=%.4f => (win=%d + %f * win, intersend=%f)",
 	    _domain.str().c_str(), _generation, double( _domain.count() ) / double( total ), _window_increment, _window_multiple, _intersend );
   return tmp;
 }

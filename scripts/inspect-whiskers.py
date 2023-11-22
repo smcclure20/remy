@@ -20,6 +20,12 @@ def load_whiskers(whisker_file_name):
 def match_all(whisker):
     return True
 
+def whisker_low_queue_constraint(whisker):
+    return whisker.domain.lower.int_queue == 0.0
+
+def whisker_low_util_constraint(whisker):
+    return whisker.domain.lower.int_link == 0.0 and whisker.domain.upper.int_link < 1.0
+
 def whisker_slowrecwma_constraint(whisker):
     return not(whisker.domain.upper.slow_rec_rec_ewma >= 0 and whisker.domain.lower.slow_rec_rec_ewma <= 0)
 
@@ -85,7 +91,7 @@ if __name__ == "__main__":
     whiskertree = load_whiskers(whisker_file)
     print_tree(whiskertree)
     whiskers = get_whiskers_for_constraint(whiskertree, match_all)
-    print(len(whiskers))
+    # print(len(whiskers))
     # for whisker in whiskers:
     #     print(whisker_str(whisker))
     # total_intersend = 0
@@ -96,6 +102,14 @@ if __name__ == "__main__":
 
     # print(whiskertree.domain.active_axis)
 
-    # count = count_whiskers_for_constraint(whiskertree, whisker_intersend_constraint)
-    # print(count)
+    # w = get_whiskers_for_constraint(whiskertree, whisker_low_util_constraint)
+    # total_sending_rate = 0
+    # rates = []
+    # for whisker in w:
+    #     total_sending_rate += whisker.intersend
+    #     rates.append(whisker.intersend)
+    # print(total_sending_rate / len(w))
+    # print(min(rates))
+    # print(max(rates))
+    # print(rates)
     
