@@ -71,7 +71,7 @@ int main( int argc, char *argv[] )
   FinTree fins;
   bool is_poisson = false;
   unsigned int num_senders = 1;
-  double link_ppt = 3;
+  double link_ppt = 3.5;
   double delay = 20;
   double mean_on_duration = 1000.0;
   double mean_off_duration = 100.0;
