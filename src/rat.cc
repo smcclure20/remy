@@ -32,7 +32,7 @@ void Rat::packets_received( const vector< Packet > & packets ) {
   // std::cout << "Current whisker: " << current_whisker.str() << std::endl;
 
   _the_window = current_whisker.window( _the_window );
-  _intersend_time = _memory.field(1) * abs(current_whisker.intersend());
+  _intersend_time = _memory.field(1) * current_whisker.intersend();
   // std::cout << "Current state: win=" << _the_window << ", inter=" << _intersend_time << " (rate="  << 1 / _intersend_time << ")" << std::endl << std::endl;
 }
 
