@@ -21,7 +21,7 @@ int get_option_value( const string arg, const string & name )
 {
   for ( int i = 0; i < (int) arg.length(); i++ ) 
   {
-    if ( !isdigit( arg[i] ) )
+    if ( !isdigit( arg[i] ) || i == (int) (arg.length() - 1))
     {
       if ( i == 0 )
       {
@@ -29,7 +29,7 @@ int get_option_value( const string arg, const string & name )
 	      exit( 1 );
       }
 
-      return atoi( arg.substr( 0, i ).c_str() );
+      return atoi( arg.substr( 0, i + 1 ).c_str() );
     }
   }
 
@@ -88,11 +88,13 @@ int main( int argc, char *argv[] )
         } else if ( c == 'l' ) { 
           whisker_options.alternates_limit = get_option_value( arg.substr( arg.find("l") ), "l" );
         } else if ( c == 's' ) {
-          whisker_options.sample_size = get_option_value( arg.substr( arg.find("s") ), "s" );
-        } else {
-          fprintf( stderr, "Invalid optimize option: %c\n", c );
-          exit( 1 );
-        }
+          whisker_options.sample_size = get_option_value( arg.substr( arg.find("s") + 1 ), "s" );
+          std::cout << "Sample size: " << whisker_options.sample_size << std::endl;
+        } 
+        // else {
+        //   fprintf( stderr, "Invalid optimize option: %c\n", c );
+        //   exit( 1 );
+        // }
       }
 
     } else if ( arg.substr(0, 3 ) == "cf=" ) {

@@ -13,10 +13,10 @@ void Link::tick( NextHop & next, const double & tickno )
 
     if ( not _buffer.empty() ) {
       Packet p = _buffer.front();
+      add_packet_to_counter(tickno);
       set_int_fields(p);
       _pending_packet.accept( p, tickno );
       _buffer.pop_front();
-      add_packet_to_counter(tickno);
     }
   }
 }
