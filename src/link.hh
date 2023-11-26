@@ -79,9 +79,9 @@ public:
 
   void accept( Packet & p, const double & tickno ) noexcept {
     if ( _pending_packet.empty() ) {
-      set_int_fields(p);
       _pending_packet.accept( p, tickno );
       add_packet_to_counter(tickno);
+      set_int_fields(p);
     } else {
       if ( _limit and _buffer.size() < _limit ) {
         
