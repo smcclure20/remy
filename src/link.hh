@@ -31,7 +31,7 @@ private:
 public:
   Link( const double s_rate,
 	const unsigned int s_limit )
-    : _buffer(), _pending_packet( 1.0 / s_rate ), _limit( s_limit ), _counter_interval(10),  _packet_counters(), _current_bucket(0), _last_tick(0) {}
+    : _buffer(), _pending_packet( 1.0 / s_rate ), _limit( s_limit ), _counter_interval(100),  _packet_counters(), _current_bucket(0), _last_tick(0) {}
 
   int get_buffer_size(void) { return _buffer.size(); }
 
