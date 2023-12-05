@@ -41,7 +41,7 @@ Makefile.in
 tmp*.txt
 /scripts/output
 /results/evals
-/results/
+/results/*
 /plot/
 *.pyc
 .vscode/
