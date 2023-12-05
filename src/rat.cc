@@ -50,8 +50,8 @@ void Rat::reset( const double & )
   /* initial window and intersend time */
   const Whisker & current_whisker( _whiskers.use_whisker( _memory, _track ) );
   _the_window = current_whisker.window( _the_window );
-  _intersend_time = current_whisker.intersend();
-  _initial=false;
+  _intersend_time = _memory.field(1) * current_whisker.intersend(); // this will be 0
+  _initial=false; // reset is called when the rat turns on, so not sure this will ever be used
 }
 
 double Rat::next_event_time( const double & tickno ) const

@@ -44,7 +44,7 @@ void parse_outcome( T & outcome, bool verb )
       }
     }
     printf("filtered score: %f\n", filtered_score);
-    printf("number of runs: %d\n", run_count);
+    printf("number  runs: %d\n", run_count);
   }
 
   double norm_score = 0;
