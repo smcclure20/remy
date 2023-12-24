@@ -75,7 +75,7 @@ public:
     _last_tick = tickno;
   }
 
-  void set_int_fields(Packet & p) {p.queue_stat = get_buffer_size(); p.link_stat = get_recent_util();}
+  void set_int_fields(Packet & p) {p.queue_stat = get_buffer_size(); p.link_stat = get_avail_capacity();}
 
   void accept( Packet & p, const double & tickno ) noexcept {
     if ( _pending_packet.empty() ) {
