@@ -18,7 +18,7 @@ template <typename T, typename A>
 class ActionImprover
 {
 protected:
-  const double MAX_PERCENT_ERROR = 0.05;
+  const double MAX_PERCENT_ERROR = 0.15;
   const Evaluator< T > eval_;
 
   T tree_;
