@@ -42,6 +42,12 @@ public:
     return ( total_count / _counter_interval) / ( 1 / _pending_packet.delay()); // This can be off by at most 10% if the current bucket just changed
   }
 
+  double get_avail_capacity() {
+    double total_count = 0;
+    total_count = std::accumulate(_packet_counters, _packet_counters + 10, total_count);
+    return std::max(( 1 / _pending_packet.delay()) -  ( total_count / _counter_interval), (double)0); 
+  }
+
   void add_packet_to_counter(double tickno) {
     unsigned int tick_bucket = ((int) std::floor(tickno / (_counter_interval / 10))) % 10;
 
@@ -73,9 +79,9 @@ public:
 
   void accept( Packet & p, const double & tickno ) noexcept {
     if ( _pending_packet.empty() ) {
+      add_packet_to_counter(tickno);
       set_int_fields(p);
       _pending_packet.accept( p, tickno );
-      add_packet_to_counter(tickno);
     } else {
       if ( _limit and _buffer.size() < _limit ) {
         
