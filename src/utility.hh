@@ -59,7 +59,7 @@ public:
       }
       // printf("First send tick: %f\n", _first_send_tick);
       // printf("Last sendable tick: %f\n", last_sendable_tick);
-      return -INT_MAX;
+      return 0.0;
     }
 
     const double throughput_utility = log2( average_throughput_normalized_to_equal_share() );
