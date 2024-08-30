@@ -1,6 +1,7 @@
 #include <boost/functional/hash.hpp>
 #include <vector>
 #include <cassert>
+#include <cmath>
 
 #include "memory.hh"
 
@@ -28,7 +29,7 @@ void Memory::packets_received( const vector< Packet > & packets, const unsigned 
     }
     _largest_ack = max( _largest_ack, x.seq_num );
 
-    const double rtt = x.tick_received - x.tick_sent;
+    const double rtt = (double) round(x.tick_received - x.tick_sent);
     int pkt_outstanding = 1;
     if ( x.seq_num > largest_ack ) {
       pkt_outstanding = x.seq_num - largest_ack;
