@@ -26,6 +26,8 @@ private:
   double _last_tick_sent;
   double _last_tick_received;
   double _min_rtt;
+  double _rec_send_ewma_abs;
+  double _slow_rec_rec_ewma_abs;
   std::queue< double > _losses;
 
 public:
@@ -42,6 +44,8 @@ public:
       _last_tick_sent( 0 ),
       _last_tick_received( 0 ),
       _min_rtt( 0 ),
+      _rec_send_ewma_abs(0);
+      _slow_rec_rec_ewma_abs(0);
       _losses( )
   {}
 
@@ -58,10 +62,12 @@ public:
       _last_tick_sent( 0 ),
       _last_tick_received( 0 ),
       _min_rtt( 0 ),
+      _rec_send_ewma_abs(0);
+      _slow_rec_rec_ewma_abs(0);
       _losses( )
   {}
 
-  void reset( void ) { _rec_send_ewma = _rec_rec_ewma = _rtt_ratio = _slow_rec_rec_ewma = _rtt_diff = _queueing_delay = _recent_loss = _last_tick_sent = _last_tick_received = _min_rtt = _int_queue = _int_link = 0; _losses = std::queue< double > (); }
+  void reset( void ) { _rec_send_ewma = _rec_rec_ewma = _rtt_ratio = _slow_rec_rec_ewma = _rtt_diff = _queueing_delay = _recent_loss = _last_tick_sent = _last_tick_received = _min_rtt = _int_queue = _int_link = _rec_send_ewma_abs = _slow_rec_rec_ewma_abs = 0; _losses = std::queue< double > (); }
 
   static const unsigned int datasize = 9;
   

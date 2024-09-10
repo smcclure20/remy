@@ -38,10 +38,19 @@ void Memory::packets_received( const vector< Packet > & packets, const unsigned 
       _last_tick_received = x.tick_received;
       _min_rtt = rtt;
     } else {
-      _rec_send_ewma = (1 - alpha) * _rec_send_ewma + alpha * (x.tick_sent - _last_tick_sent);
+      _rec_send_ewma_abs = (1 - alpha) * _rec_send_ewma_abs + alpha * (x.tick_sent - _last_tick_sent);
       _rec_rec_ewma = (1 - alpha) * _rec_rec_ewma + alpha * (x.tick_received - _last_tick_received);
-      _slow_rec_rec_ewma = (1 - slow_alpha) * _slow_rec_rec_ewma + slow_alpha * (x.tick_received - _last_tick_received);
+      _slow_rec_rec_ewma_abs = (1 - slow_alpha) * _slow_rec_rec_ewma_abs + slow_alpha * (x.tick_received - _last_tick_received);
 
+      _rec_send_ewma = _rec_send_ewma_abs / _rec_rec_ewma;
+      _slow_rec_rec_ewma = _slow_rec_rec_ewma_abs / _rec_rec_ewma;
+
+      if (_rec_send_ewma > 163840.0) {
+	      _rec_send_ewma = 163839.0;
+      }
+      if (_slow_rec_rec_ewma > 163480.0) {
+	      _slow_rec_rec_ewma = 163839.0;
+      }
       _last_tick_sent = x.tick_sent;
       _last_tick_received = x.tick_received;
 
