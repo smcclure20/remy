@@ -156,6 +156,8 @@ Memory::Memory( const bool is_lower_limit, const RemyBuffers::Memory & dna )
     _last_tick_sent( 0 ),
     _last_tick_received( 0 ),
     _min_rtt( 0 ),
+    _rec_send_ewma_abs(0),
+    _slow_rec_rec_ewma_abs(0),
     _losses( )
 {
 }
