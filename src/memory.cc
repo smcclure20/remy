@@ -24,7 +24,10 @@ void Memory::packets_received( const vector< Packet > & packets, const unsigned 
 
     if (x.seq_num > _largest_ack + 1 ) {
       _losses.push( x.tick_received );
+      _recent_loss = (1 - alpha) * _recent_loss + alpha;
       // printf("loss!\n");
+    } else {
+      _recent_loss = (1 - alpha) * _recent_loss;
     }
     _largest_ack = max( _largest_ack, x.seq_num );
 
@@ -45,7 +48,7 @@ void Memory::packets_received( const vector< Packet > & packets, const unsigned 
       _last_tick_sent = x.tick_sent;
       _last_tick_received = x.tick_received;
 
-      _recent_loss = _losses.size();
+      // _recent_loss = _losses.size();
       while ( !_losses.empty() && _losses.front() < x.tick_received - loss_memory ) {
         _losses.pop();
       }
