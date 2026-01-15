@@ -1,7 +1,6 @@
 #!/bin/bash
 
 import sys
-sys.path.insert(0, "/home/eecs/sarah/remy")
 
 from protobufs.dna_pb2 import WhiskerTree
 

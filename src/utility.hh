@@ -57,8 +57,6 @@ public:
       if ( _first_send_tick > last_sendable_tick ) {
         return 0.0;
       }
-      // printf("First send tick: %f\n", _first_send_tick);
-      // printf("Last sendable tick: %f\n", last_sendable_tick);
       return -INT_MAX;
     }
 

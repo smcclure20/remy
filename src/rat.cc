@@ -26,14 +26,12 @@ void Rat::packets_received( const vector< Packet > & packets ) {
   /* Assumption: There is no reordering */ 
   _memory.packets_received( packets, _flow_id, _largest_ack );
   _largest_ack = max( packets.at( packets.size() - 1 ).seq_num, _largest_ack );
-  // std::cout << "Current memory: " << _memory.str() << std::endl;
 
   const Whisker & current_whisker( _whiskers.use_whisker( _memory, _track ) );
-  // std::cout << "Current whisker: " << current_whisker.str() << std::endl;
 
   _the_window = current_whisker.window( _the_window );
   _intersend_time = _memory.field(1) * current_whisker.intersend();
-  // std::cout << "Current state: win=" << _the_window << ", inter=" << _intersend_time << " (rate="  << 1 / _intersend_time << ")" << std::endl << std::endl;
+  
 }
 
 void Rat::reset( const double & )
@@ -51,7 +49,7 @@ void Rat::reset( const double & )
   const Whisker & current_whisker( _whiskers.use_whisker( _memory, _track ) );
   _the_window = current_whisker.window( _the_window );
   _intersend_time = _memory.field(1) * current_whisker.intersend(); // this will be 0
-  _initial=false; // reset is called when the rat turns on, so not sure this will ever be used
+  _initial=false; // TODO: reset is called when the rat turns on, so this is not used
 }
 
 double Rat::next_event_time( const double & tickno ) const

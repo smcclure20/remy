@@ -4,7 +4,6 @@
 # Therefore, for every whisker in the first whisker tree, there will be a whisker in the output 
 
 import sys
-sys.path.insert(0, "/home/eecs/sarah/remy")
 
 from protobufs.dna_pb2 import WhiskerTree, Memory
 

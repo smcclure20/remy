@@ -74,7 +74,7 @@ void Evaluator< T >::_generate_configs( const ConfigRange & range )
 template <typename T>
 void Evaluator< T >::_sample_configs(const ConfigRange & range, const int num)
 {
-  PRNG sample_prng( _prng_seed ); // Is it an issue that we are using the same seed that we do for the simulations themselves?
+  PRNG sample_prng( _prng_seed );
   for (int i = 0; i < num; i++ ) {
     double link_ppt =  _sample_range(range.link_ppt.low, range.link_ppt.high, range.link_ppt.incr);
     double rtt =  _sample_range(range.rtt.low, range.rtt.high, range.rtt.incr);

@@ -91,10 +91,6 @@ int main( int argc, char *argv[] )
           whisker_options.sample_size = get_option_value( arg.substr( arg.find("s") + 1 ), "s" );
           std::cout << "Sample size: " << whisker_options.sample_size << std::endl;
         } 
-        // else {
-        //   fprintf( stderr, "Invalid optimize option: %c\n", c );
-        //   exit( 1 );
-        // }
       }
 
     } else if ( arg.substr(0, 3 ) == "cf=" ) {
@@ -197,12 +193,6 @@ int main( int argc, char *argv[] )
 
         }
       }
-      // TODO: Find a less annoying way to print this out (if it is even helpful)
-      // printf( "===\nconfig: %s\n", run.first.str().c_str() );
-      // for ( auto &x : run.second ) {
-	      // printf( "sender: [tp=%f, del=%f]\n", x.first / run.first.link_ppt, x.second / run.first.delay );
-      // }
-    // }
 
     if ( !output_filename.empty() ) {
       char of[ 128 ];

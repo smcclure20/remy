@@ -1,4 +1,31 @@
-[![Build Status](https://travis-ci.org/tcpexmachina/remy.svg?branch=master)](https://travis-ci.org/tcpexmachina/remy)
+R+: Remy Performance Improvement + INT Support
+============================================================
+# Changes
+This repo contains a few important changes over baseline Remy:
+- The number of configurations used in each training step is increased
+- The pacing rate action is a coefficient on the current sending rate, not a constant
+- Minor fixes to improve performance on early drop out, scoring, etc.
+- INT signals (link util and queue length) added
+
+# Example Usage
+`./remy cf=../configs/config-default of=../results/default-config/int/ sig=dsrqk`
+
+# Requirements
+Packages:
+` cmake make clang protobuf-compiler g++ libboost-all-dev libglfw3-dev libglew-dev libsdl-pango-dev gtkmm-3.0`
+
+Also, you may have to set the following environment variable:
+`export AM_LDFLAGS="-pthread -lpthread"`
+
+# Parameter Changes
+- INT signals
+  - Several signals are available for configuration in `./remy` (`sig=dsrqk` includes all base E2E signals and link and queue INT (`qk`))
+  - To create new signals, you will likely have to add to `link.hh` to change/add how signals are calculated (and then appended to the packet)
+- Network config
+  - The network config is set with `cf=`. You can create new configs with `./input-configrange`
+- Utility function
+  - The utility function is defined in `utility.hh` (will require recompilation)
+
 
 Remy: TCP ex Machina (computer-generated congestion control)
 ============================================================

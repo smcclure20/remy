@@ -246,12 +246,6 @@ double SenderGang<SenderType, SwitcherType>::utility( void ) const
     total_utility += x.utility.utility();
   }
 
-  // if ( total_utility / _gang.size()  < (double) -10000 ){
-  //   for ( auto &x : _gang ) {
-  //     printf("Tput: %f, delay: %f, utility: %f\n", x.utility.average_throughput_normalized_to_equal_share(), x.utility.average_delay(), x.utility.utility(  ));
-  //   }
-  // }
-
   return total_utility / _gang.size(); /* mean utility per sender */
 }
 
@@ -266,12 +260,6 @@ double SenderGang<SenderType, SwitcherType>::utility( const double last_sendable
   for ( auto &x : _gang ) {
     total_utility += x.utility.utility( last_sendable_tick );
   }
-
-  // if ( total_utility / _gang.size()  < (double) -10000 ){
-  //   for ( auto &x : _gang ) {
-  //     printf("Tput: %f, delay: %f, utility: %f\n", x.utility.average_throughput_normalized_to_equal_share(), x.utility.average_delay(), x.utility.utility( last_sendable_tick ));
-  //   }
-  // }
 
   return total_utility / _gang.size(); /* mean utility per sender */
 }

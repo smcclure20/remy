@@ -58,11 +58,8 @@ void Memory::packets_received( const vector< Packet > & packets, const unsigned 
       assert( _rtt_ratio >= 1.0 );
       _rtt_diff = rtt - _min_rtt;
       assert( _rtt_diff >= 0 );
-      _queueing_delay = _rec_rec_ewma * pkt_outstanding; // TODO: UNDERSTAND THIS
+      _queueing_delay = _rec_rec_ewma * pkt_outstanding; 
 
-      // _int_queue = x.queue_stat; //  TODO: Maybe some smoothing??
-      // _int_link = x.link_stat;
-      // std::cout << "Received packet with intq=" << x.queue_stat << ", intl=" << x.link_stat << std::endl;
       _int_queue = (1 - alpha) * _int_queue + alpha * x.queue_stat;
       _int_link = (1 - alpha) * _int_link + alpha * x.link_stat;
     }

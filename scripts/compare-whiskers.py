@@ -4,7 +4,6 @@
 # I am pretty sure these scripts do the exact same thing
 
 import sys
-sys.path.insert(0, "/home/eecs/sarah/remy")
 
 from protobufs.dna_pb2 import WhiskerTree, Memory
 

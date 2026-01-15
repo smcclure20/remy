@@ -9,7 +9,6 @@
 #include "packet.hh"
 #include "delay.hh"
 
-// TODO: Clean this up
 
 class Link
 {
