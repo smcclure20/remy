@@ -12,7 +12,7 @@ This repo contains a few important changes over baseline Remy:
 
 # Requirements
 Packages:
-` cmake make clang protobuf-compiler g++ libboost-all-dev libglfw3-dev libglew-dev libsdl-pango-dev gtkmm-3.0`
+`cmake make clang protobuf-compiler g++ libboost-all-dev libglfw3-dev libglew-dev libsdl-pango-dev`
 
 Also, you may have to set the following environment variable:
 `export AM_LDFLAGS="-pthread -lpthread"`
